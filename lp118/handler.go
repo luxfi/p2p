@@ -10,7 +10,9 @@ import (
 	"fmt"
 	"time"
 
+	consensuscore "github.com/luxfi/consensus/core"
 	"github.com/luxfi/ids"
+	"github.com/luxfi/p2p"
 	"github.com/luxfi/warp"
 )
 
@@ -164,4 +166,36 @@ func UnmarshalSignatureResponse(data []byte) (*SignatureResponse, error) {
 	return &SignatureResponse{
 		Signature: data[4 : 4+sigLen],
 	}, nil
+}
+
+// Ensure HandlerAdapter implements p2p.Handler
+var _ p2p.Handler = (*HandlerAdapter)(nil)
+
+// HandlerAdapter adapts an lp118.Handler to a p2p.Handler interface.
+// This allows LP-118 handlers to be registered with the p2p router.
+type HandlerAdapter struct {
+	handler Handler
+}
+
+// NewHandlerAdapter creates a new adapter that wraps an lp118.Handler
+// and implements the p2p.Handler interface.
+func NewHandlerAdapter(handler Handler) *HandlerAdapter {
+	return &HandlerAdapter{handler: handler}
+}
+
+// AppGossip implements p2p.Handler. LP-118 does not use gossip, so this is a no-op.
+func (a *HandlerAdapter) AppGossip(ctx context.Context, nodeID ids.NodeID, gossipBytes []byte) {
+	// LP-118 does not use AppGossip
+}
+
+// AppRequest implements p2p.Handler by delegating to the wrapped lp118.Handler.
+func (a *HandlerAdapter) AppRequest(ctx context.Context, nodeID ids.NodeID, deadline time.Time, requestBytes []byte) ([]byte, *consensuscore.AppError) {
+	response, err := a.handler.AppRequest(ctx, nodeID, deadline, requestBytes)
+	if err != nil {
+		return nil, &consensuscore.AppError{
+			Code:    500,
+			Message: err.Error(),
+		}
+	}
+	return response, nil
 }
