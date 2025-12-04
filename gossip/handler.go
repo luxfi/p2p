@@ -15,8 +15,8 @@ import (
 	"github.com/luxfi/log"
 )
 
-// BloomFilter represents a bloom filter for gossip
-type BloomFilter interface {
+// BloomChecker checks membership in a bloom filter
+type BloomChecker interface {
 	Contains(hash []byte, salt []byte) bool
 }
 
@@ -26,7 +26,7 @@ func NewHandler[T Gossipable](
 	set Set[T],
 	metrics Metrics,
 	targetResponseSize int,
-	bloomFilter BloomFilter,
+	bloomChecker BloomChecker,
 ) *Handler[T] {
 	return &Handler[T]{
 		Handler:            p2p.NoOpHandler{},
@@ -35,7 +35,7 @@ func NewHandler[T Gossipable](
 		set:                set,
 		metrics:            metrics,
 		targetResponseSize: targetResponseSize,
-		bloomFilter:        bloomFilter,
+		bloomChecker:       bloomChecker,
 	}
 }
 
@@ -46,7 +46,7 @@ type Handler[T Gossipable] struct {
 	set                Set[T]
 	metrics            Metrics
 	targetResponseSize int
-	bloomFilter        BloomFilter
+	bloomChecker       BloomChecker
 }
 
 func (h Handler[T]) AppRequest(_ context.Context, _ ids.NodeID, _ time.Time, requestBytes []byte) ([]byte, *consensuscore.AppError) {
@@ -61,11 +61,11 @@ func (h Handler[T]) AppRequest(_ context.Context, _ ids.NodeID, _ time.Time, req
 		gossipID := gossipable.GossipID()
 
 		// filter out what the requesting peer already knows about
-		if h.bloomFilter != nil && h.bloomFilter.Contains(gossipID[:], salt[:]) {
+		if h.bloomChecker != nil && h.bloomChecker.Contains(gossipID[:], salt[:]) {
 			return true
 		}
 		// Also check with raw filter bytes if bloom filter implementation exists
-		if len(filter) > 0 && h.bloomFilter != nil && h.bloomFilter.Contains(gossipID[:], salt[:]) {
+		if len(filter) > 0 && h.bloomChecker != nil && h.bloomChecker.Contains(gossipID[:], salt[:]) {
 			return true
 		}
 
