@@ -15,8 +15,8 @@ import (
 
 	consensuscore "github.com/luxfi/consensus/core"
 	"github.com/luxfi/ids"
-	"github.com/luxfi/p2p"
 	"github.com/luxfi/log"
+	"github.com/luxfi/p2p"
 )
 
 const (
@@ -31,6 +31,7 @@ const (
 	sentType   = "sent"
 
 	defaultGossipableCount = 64
+	defaultInitSize        = 32
 )
 
 var (
@@ -256,15 +257,15 @@ var sentLabels = map[string]string{
 	typeLabel: sentType,
 }
 
-// Deque interface for buffer operations
+// Deque interface for buffer operations (internal use)
 type Deque[T any] interface {
-	PushRight(T)
-	PushLeft(T)
+	PushRight(T) bool
+	PushLeft(T) bool
 	PopLeft() (T, bool)
 	Len() int
 }
 
-// Cacher interface for cache operations
+// Cacher interface for cache operations (internal use)
 type Cacher[K comparable, V any] interface {
 	Get(key K) (V, bool)
 	Put(key K, value V)
@@ -280,6 +281,139 @@ func (EmptyCache[K, V]) Get(key K) (V, bool) {
 
 func (EmptyCache[K, V]) Put(key K, value V) {}
 
+// unboundedDeque is an unbounded double-ended queue implementation
+type unboundedDeque[T any] struct {
+	size, left, right int
+	data              []T
+}
+
+// newUnboundedDeque creates a new unbounded deque with the given initial size
+func newUnboundedDeque[T any](initSize int) *unboundedDeque[T] {
+	if initSize < 2 {
+		initSize = defaultInitSize
+	}
+	return &unboundedDeque[T]{
+		data:  make([]T, initSize),
+		right: 1,
+	}
+}
+
+func (b *unboundedDeque[T]) PushRight(elt T) bool {
+	b.data[b.right] = elt
+	b.size++
+	b.right++
+	b.right %= len(b.data)
+	b.resize()
+	return true
+}
+
+func (b *unboundedDeque[T]) PushLeft(elt T) bool {
+	b.data[b.left] = elt
+	b.size++
+	b.left--
+	if b.left < 0 {
+		b.left = len(b.data) - 1
+	}
+	b.resize()
+	return true
+}
+
+func (b *unboundedDeque[T]) PopLeft() (T, bool) {
+	if b.size == 0 {
+		var zero T
+		return zero, false
+	}
+	idx := b.leftmostEltIdx()
+	elt := b.data[idx]
+	var zero T
+	b.data[idx] = zero
+	b.size--
+	b.left++
+	b.left %= len(b.data)
+	return elt, true
+}
+
+func (b *unboundedDeque[T]) Len() int {
+	return b.size
+}
+
+func (b *unboundedDeque[T]) leftmostEltIdx() int {
+	if b.left == len(b.data)-1 {
+		return 0
+	}
+	return b.left + 1
+}
+
+func (b *unboundedDeque[T]) resize() {
+	if b.size != len(b.data) {
+		return
+	}
+	newData := make([]T, b.size*2)
+	leftmostIdx := b.leftmostEltIdx()
+	copy(newData, b.data[leftmostIdx:])
+	numCopied := len(b.data) - leftmostIdx
+	copy(newData[numCopied:], b.data[:b.right])
+	b.data = newData
+	b.left = len(b.data) - 1
+	b.right = b.size
+}
+
+// lruCache is a simple LRU cache implementation
+type lruCache[K comparable, V any] struct {
+	maxSize int
+	data    map[K]V
+	order   []K
+}
+
+// newLRUCache creates a new LRU cache with the given maximum size
+func newLRUCache[K comparable, V any](maxSize int) *lruCache[K, V] {
+	if maxSize < 1 {
+		maxSize = 1
+	}
+	return &lruCache[K, V]{
+		maxSize: maxSize,
+		data:    make(map[K]V),
+		order:   make([]K, 0, maxSize),
+	}
+}
+
+func (c *lruCache[K, V]) Get(key K) (V, bool) {
+	val, ok := c.data[key]
+	if ok {
+		// Move to end (most recently used)
+		c.moveToEnd(key)
+	}
+	return val, ok
+}
+
+func (c *lruCache[K, V]) Put(key K, value V) {
+	if _, ok := c.data[key]; ok {
+		c.data[key] = value
+		c.moveToEnd(key)
+		return
+	}
+
+	// Evict oldest if at capacity
+	if len(c.data) >= c.maxSize && len(c.order) > 0 {
+		oldest := c.order[0]
+		delete(c.data, oldest)
+		c.order = c.order[1:]
+	}
+
+	c.data[key] = value
+	c.order = append(c.order, key)
+}
+
+func (c *lruCache[K, V]) moveToEnd(key K) {
+	for i, k := range c.order {
+		if k == key {
+			c.order = append(c.order[:i], c.order[i+1:]...)
+			c.order = append(c.order, key)
+			return
+		}
+	}
+}
+
 // NewPushGossiper returns an instance of PushGossiper
 func NewPushGossiper[T Gossipable](
 	marshaller Marshaller[T],
@@ -292,9 +426,6 @@ func NewPushGossiper[T Gossipable](
 	discardedSize int,
 	targetGossipSize int,
 	maxRegossipFrequency time.Duration,
-	toGossip Deque[T],
-	toRegossip Deque[T],
-	discarded Cacher[ids.ID, struct{}],
 ) (*PushGossiper[T], error) {
 	if err := gossipParams.Verify(); err != nil {
 		return nil, fmt.Errorf("invalid gossip params: %w", err)
@@ -323,9 +454,9 @@ func NewPushGossiper[T Gossipable](
 		maxRegossipFrequency: maxRegossipFrequency,
 
 		tracking:   make(map[ids.ID]*tracking),
-		toGossip:   toGossip,
-		toRegossip: toRegossip,
-		discarded:  discarded,
+		toGossip:   newUnboundedDeque[T](0),
+		toRegossip: newUnboundedDeque[T](0),
+		discarded:  newLRUCache[ids.ID, struct{}](discardedSize),
 	}, nil
 }
 
