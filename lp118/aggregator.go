@@ -101,16 +101,8 @@ func (s *SignatureAggregator) AggregateSignatures(
 			Validator: validator,
 		}
 
-		// Convert validator.NodeID ([]byte) to ids.NodeID
-		var nodeID ids.NodeID
-		if len(validator.NodeID) >= ids.NodeIDLen {
-			copy(nodeID[:], validator.NodeID[:ids.NodeIDLen])
-		} else {
-			copy(nodeID[:], validator.NodeID)
-		}
-
-		nodeIDsToValidator[nodeID] = v
-		nonSigners = append(nonSigners, nodeID)
+		nodeIDsToValidator[validator.NodeID] = v
+		nonSigners = append(nonSigners, validator.NodeID)
 	}
 
 	// Account for requested signatures + the signature that was provided
@@ -130,7 +122,7 @@ func (s *SignatureAggregator) AggregateSignatures(
 		results:             results,
 	}
 
-	if err := s.client.AppRequest(ctx, set.Of(nonSigners...), requestBytes, handler.HandleResponse); err != nil {
+	if err := s.client.Request(ctx, set.Of(nonSigners...), requestBytes, handler.HandleResponse); err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to send aggregation request: %w", err)
 	}
 

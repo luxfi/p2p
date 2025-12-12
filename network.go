@@ -14,7 +14,6 @@ import (
 	"github.com/luxfi/metric"
 
 	"github.com/luxfi/ids"
-	consensuscore "github.com/luxfi/consensus/core"
 	validators "github.com/luxfi/consensus/validator"
 	consensusversion "github.com/luxfi/consensus/version"
 	"github.com/luxfi/log"
@@ -22,9 +21,8 @@ import (
 )
 
 var (
-	_ validators.Connector  = (*Network)(nil)
-	_ consensuscore.AppHandler = (*Network)(nil)
-	_ NodeSampler           = (*PeerSampler)(nil)
+	_ validators.Connector = (*Network)(nil)
+	_ NodeSampler          = (*PeerSampler)(nil)
 
 	labelNames = []string{opLabel, handlerLabel}
 )
@@ -40,7 +38,7 @@ func (o clientOptionFunc) apply(options *clientOptions) {
 	o(options)
 }
 
-// WithValidatorSampling configures Client.AppRequestAny to sample validators
+// WithValidatorSampling configures Client.RequestAny to sample validators
 func WithValidatorSampling(validators *Validators) ClientOption {
 	return clientOptionFunc(func(options *clientOptions) {
 		options.nodeSampler = validators
@@ -49,14 +47,14 @@ func WithValidatorSampling(validators *Validators) ClientOption {
 
 // clientOptions holds client-configurable values
 type clientOptions struct {
-	// nodeSampler is used to select nodes to route Client.AppRequestAny to
+	// nodeSampler is used to select nodes to route Client.RequestAny to
 	nodeSampler NodeSampler
 }
 
 // NewNetwork returns an instance of Network
 func NewNetwork(
 	log log.Logger,
-	sender consensuscore.AppSender,
+	sender Sender,
 	registerer metric.Registerer,
 	namespace string,
 ) (*Network, error) {
@@ -101,25 +99,29 @@ type Network struct {
 	Peers *Peers
 
 	log    log.Logger
-	sender consensuscore.AppSender
+	sender Sender
 
 	router *router
 }
 
-func (n *Network) AppRequest(ctx context.Context, nodeID ids.NodeID, requestID uint32, deadline time.Time, request []byte) error {
-	return n.router.AppRequest(ctx, nodeID, requestID, deadline, request)
+func (n *Network) Request(ctx context.Context, nodeID ids.NodeID, requestID uint32, deadline time.Time, request []byte) ([]byte, *Error) {
+	err := n.router.Request(ctx, nodeID, requestID, deadline, request)
+	if err != nil {
+		return nil, &Error{Code: -1, Message: err.Error()}
+	}
+	return nil, nil
 }
 
-func (n *Network) AppResponse(ctx context.Context, nodeID ids.NodeID, requestID uint32, response []byte) error {
-	return n.router.AppResponse(ctx, nodeID, requestID, response)
+func (n *Network) Response(ctx context.Context, nodeID ids.NodeID, requestID uint32, response []byte) error {
+	return n.router.Response(ctx, nodeID, requestID, response)
 }
 
-func (n *Network) AppRequestFailed(ctx context.Context, nodeID ids.NodeID, requestID uint32, appErr *consensuscore.AppError) error {
-	return n.router.AppRequestFailed(ctx, nodeID, requestID, appErr)
+func (n *Network) RequestFailed(ctx context.Context, nodeID ids.NodeID, requestID uint32, appErr *Error) error {
+	return n.router.RequestFailed(ctx, nodeID, requestID, appErr)
 }
 
-func (n *Network) AppGossip(ctx context.Context, nodeID ids.NodeID, msg []byte) error {
-	return n.router.AppGossip(ctx, nodeID, msg)
+func (n *Network) Gossip(ctx context.Context, nodeID ids.NodeID, msg []byte) error {
+	return n.router.Gossip(ctx, nodeID, msg)
 }
 
 func (n *Network) Connected(_ context.Context, nodeID ids.NodeID, _ *consensusversion.Application) error {

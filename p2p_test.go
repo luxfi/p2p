@@ -9,13 +9,12 @@ import (
 	"time"
 
 	"github.com/luxfi/ids"
-	consensuscore "github.com/luxfi/consensus/core"
 )
 
 func TestNoOpHandler(t *testing.T) {
 	h := NoOpHandler{}
-	h.AppGossip(context.Background(), ids.EmptyNodeID, nil)
-	resp, err := h.AppRequest(context.Background(), ids.EmptyNodeID, time.Now(), nil)
+	h.Gossip(context.Background(), ids.EmptyNodeID, nil)
+	resp, err := h.Request(context.Background(), ids.EmptyNodeID, time.Now(), nil)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
@@ -77,7 +76,7 @@ func TestParseMessage(t *testing.T) {
 func TestErrorTypes(t *testing.T) {
 	tests := []struct {
 		name     string
-		err      *consensuscore.AppError
+		err      *Error
 		expected int32
 	}{
 		{"ErrUnexpected", ErrUnexpected, -1},

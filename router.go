@@ -15,19 +15,16 @@ import (
 	"github.com/luxfi/ids"
 	"github.com/luxfi/log"
 	"github.com/luxfi/metric"
-	consensuscore "github.com/luxfi/consensus/core"
 )
 
 var (
 	ErrExistingAppProtocol = errors.New("existing app protocol")
 	ErrUnrequestedResponse = errors.New("unrequested response")
-
-	_ consensuscore.AppHandler = (*router)(nil)
 )
 
-type pendingAppRequest struct {
+type pendingRequest struct {
 	handlerID string
-	callback  AppResponseCallback
+	callback  ResponseCallback
 }
 
 type metrics struct {
@@ -48,27 +45,27 @@ func (m *metrics) observe(labels map[string]string, start time.Time) {
 // corresponding Client.
 type router struct {
 	log     log.Logger
-	sender  consensuscore.AppSender
+	sender  Sender
 	metrics metrics
 
-	lock               sync.RWMutex
-	handlers           map[uint64]*responder
-	pendingAppRequests map[uint32]pendingAppRequest
-	requestID          uint32
+	lock            sync.RWMutex
+	handlers        map[uint64]*responder
+	pendingRequests map[uint32]pendingRequest
+	requestID       uint32
 }
 
 // newRouter returns a new instance of Router
 func newRouter(
 	log log.Logger,
-	sender consensuscore.AppSender,
+	sender Sender,
 	metrics metrics,
 ) *router {
 	return &router{
-		log:                log,
-		sender:             sender,
-		metrics:            metrics,
-		handlers:           make(map[uint64]*responder),
-		pendingAppRequests: make(map[uint32]pendingAppRequest),
+		log:             log,
+		sender:          sender,
+		metrics:         metrics,
+		handlers:        make(map[uint64]*responder),
+		pendingRequests: make(map[uint32]pendingRequest),
 		// invariant: sdk uses odd-numbered requestIDs
 		requestID: 1,
 	}
@@ -92,17 +89,17 @@ func (r *router) addHandler(handlerID uint64, handler Handler) error {
 	return nil
 }
 
-// AppRequest routes an AppRequest to a Handler based on the handler prefix. The
+// Request routes a request to a Handler based on the handler prefix. The
 // message is dropped if no matching handler can be found.
 //
 // Any error condition propagated outside Handler application logic is
 // considered fatal
-func (r *router) AppRequest(ctx context.Context, nodeID ids.NodeID, requestID uint32, deadline time.Time, request []byte) error {
+func (r *router) Request(ctx context.Context, nodeID ids.NodeID, requestID uint32, deadline time.Time, request []byte) error {
 	start := time.Now()
 	parsedMsg, handler, handlerID, ok := r.parse(request)
 	if !ok {
 		r.log.Debug("received message for unregistered handler",
-			log.UserString("messageOp", "AppRequest"),
+			log.UserString("messageOp", "Request"),
 			log.Stringer("nodeID", nodeID),
 			log.Uint32("requestID", requestID),
 			log.Time("deadline", deadline),
@@ -112,17 +109,17 @@ func (r *router) AppRequest(ctx context.Context, nodeID ids.NodeID, requestID ui
 		// Send an error back to the requesting peer. Invalid requests that we
 		// cannot parse a handler id for are handled the same way as requests
 		// for which we do not have a registered handler.
-		return r.sender.SendAppError(ctx, nodeID, requestID, ErrUnregisteredHandler.Code, ErrUnregisteredHandler.Message)
+		return r.sender.SendError(ctx, nodeID, requestID, ErrUnregisteredHandler.Code, ErrUnregisteredHandler.Message)
 	}
 
 	// call the corresponding handler and send back a response to nodeID
-	if err := handler.AppRequest(ctx, nodeID, requestID, deadline, parsedMsg); err != nil {
+	if err := handler.Request(ctx, nodeID, requestID, deadline, parsedMsg); err != nil {
 		return err
 	}
 
 	r.metrics.observe(
 		metric.Labels{
-			opLabel:      "AppRequest",
+			opLabel:      "Request",
 			handlerLabel: handlerID,
 		},
 		start,
@@ -130,14 +127,14 @@ func (r *router) AppRequest(ctx context.Context, nodeID ids.NodeID, requestID ui
 	return nil
 }
 
-// AppRequestFailed routes an AppRequestFailed message to the callback
+// RequestFailed routes a failed request message to the callback
 // corresponding to requestID.
 //
 // Any error condition propagated outside Handler application logic is
 // considered fatal
-func (r *router) AppRequestFailed(ctx context.Context, nodeID ids.NodeID, requestID uint32, appErr *consensuscore.AppError) error {
+func (r *router) RequestFailed(ctx context.Context, nodeID ids.NodeID, requestID uint32, appErr *Error) error {
 	start := time.Now()
-	pending, ok := r.clearAppRequest(requestID)
+	pending, ok := r.clearRequest(requestID)
 	if !ok {
 		// we should never receive a timeout without a corresponding requestID
 		return ErrUnrequestedResponse
@@ -147,7 +144,7 @@ func (r *router) AppRequestFailed(ctx context.Context, nodeID ids.NodeID, reques
 
 	r.metrics.observe(
 		metric.Labels{
-			opLabel:      "AppError",
+			opLabel:      "Error",
 			handlerLabel: pending.handlerID,
 		},
 		start,
@@ -155,14 +152,14 @@ func (r *router) AppRequestFailed(ctx context.Context, nodeID ids.NodeID, reques
 	return nil
 }
 
-// AppResponse routes an AppResponse message to the callback corresponding to
+// Response routes a response message to the callback corresponding to
 // requestID.
 //
 // Any error condition propagated outside Handler application logic is
 // considered fatal
-func (r *router) AppResponse(ctx context.Context, nodeID ids.NodeID, requestID uint32, response []byte) error {
+func (r *router) Response(ctx context.Context, nodeID ids.NodeID, requestID uint32, response []byte) error {
 	start := time.Now()
-	pending, ok := r.clearAppRequest(requestID)
+	pending, ok := r.clearRequest(requestID)
 	if !ok {
 		// we should never receive a timeout without a corresponding requestID
 		return ErrUnrequestedResponse
@@ -172,7 +169,7 @@ func (r *router) AppResponse(ctx context.Context, nodeID ids.NodeID, requestID u
 
 	r.metrics.observe(
 		metric.Labels{
-			opLabel:      "AppResponse",
+			opLabel:      "Response",
 			handlerLabel: pending.handlerID,
 		},
 		start,
@@ -180,28 +177,28 @@ func (r *router) AppResponse(ctx context.Context, nodeID ids.NodeID, requestID u
 	return nil
 }
 
-// AppGossip routes an AppGossip message to a Handler based on the handler
+// Gossip routes a gossip message to a Handler based on the handler
 // prefix. The message is dropped if no matching handler can be found.
 //
 // Any error condition propagated outside Handler application logic is
 // considered fatal
-func (r *router) AppGossip(ctx context.Context, nodeID ids.NodeID, gossip []byte) error {
+func (r *router) Gossip(ctx context.Context, nodeID ids.NodeID, gossip []byte) error {
 	start := time.Now()
 	parsedMsg, handler, handlerID, ok := r.parse(gossip)
 	if !ok {
 		r.log.Debug("received message for unregistered handler",
-			log.UserString("messageOp", "AppGossip"),
+			log.UserString("messageOp", "Gossip"),
 			log.Stringer("nodeID", nodeID),
 			log.Binary("message", gossip),
 		)
 		return nil
 	}
 
-	handler.AppGossip(ctx, nodeID, parsedMsg)
+	handler.Gossip(ctx, nodeID, parsedMsg)
 
 	r.metrics.observe(
 		metric.Labels{
-			opLabel:      "AppGossip",
+			opLabel:      "Gossip",
 			handlerLabel: handlerID,
 		},
 		start,
@@ -235,12 +232,12 @@ func (r *router) parse(prefixedMsg []byte) ([]byte, *responder, string, bool) {
 }
 
 // Invariant: Assumes [r.lock] isn't held.
-func (r *router) clearAppRequest(requestID uint32) (pendingAppRequest, bool) {
+func (r *router) clearRequest(requestID uint32) (pendingRequest, bool) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
-	callback, ok := r.pendingAppRequests[requestID]
-	delete(r.pendingAppRequests, requestID)
+	callback, ok := r.pendingRequests[requestID]
+	delete(r.pendingRequests, requestID)
 	return callback, ok
 }
 

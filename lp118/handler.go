@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"time"
 
-	consensuscore "github.com/luxfi/consensus/core"
 	"github.com/luxfi/ids"
 	"github.com/luxfi/p2p"
 	"github.com/luxfi/warp"
@@ -21,8 +20,8 @@ const HandlerID = 0x12345678
 
 // Handler handles LP-118 messages
 type Handler interface {
-	// AppRequest handles an incoming request
-	AppRequest(ctx context.Context, nodeID ids.NodeID, deadline time.Time, request []byte) ([]byte, error)
+	// Request handles an incoming request
+	Request(ctx context.Context, nodeID ids.NodeID, deadline time.Time, request []byte) ([]byte, error)
 }
 
 // Signer signs warp messages and returns the signature bytes
@@ -34,8 +33,8 @@ type Signer interface {
 // NoOpHandler is a no-op implementation of Handler
 type NoOpHandler struct{}
 
-// AppRequest returns an empty response
-func (NoOpHandler) AppRequest(context.Context, ids.NodeID, time.Time, []byte) ([]byte, error) {
+// Request returns an empty response
+func (NoOpHandler) Request(context.Context, ids.NodeID, time.Time, []byte) ([]byte, error) {
 	return nil, nil
 }
 
@@ -61,8 +60,8 @@ func NewCachedHandler(cache Cacher[ids.ID, []byte], backend interface{}, signer 
 	}
 }
 
-// AppRequest handles an incoming request with caching
-func (h *CachedHandler) AppRequest(ctx context.Context, nodeID ids.NodeID, deadline time.Time, request []byte) ([]byte, error) {
+// Request handles an incoming request with caching
+func (h *CachedHandler) Request(ctx context.Context, nodeID ids.NodeID, deadline time.Time, request []byte) ([]byte, error) {
 	req, err := UnmarshalSignatureRequest(request)
 	if err != nil {
 		return nil, err
@@ -73,10 +72,8 @@ func (h *CachedHandler) AppRequest(ctx context.Context, nodeID ids.NodeID, deadl
 		return nil, err
 	}
 
-	// Check cache - convert []byte ID to ids.ID
-	idBytes := unsignedMessage.ID()
-	var messageID ids.ID
-	copy(messageID[:], idBytes)
+	// Check cache
+	messageID := unsignedMessage.ID()
 	if signatureBytes, ok := h.cache.Get(messageID); ok {
 		return MarshalSignatureResponse(signatureBytes)
 	}
@@ -183,16 +180,16 @@ func NewHandlerAdapter(handler Handler) *HandlerAdapter {
 	return &HandlerAdapter{handler: handler}
 }
 
-// AppGossip implements p2p.Handler. LP-118 does not use gossip, so this is a no-op.
-func (a *HandlerAdapter) AppGossip(ctx context.Context, nodeID ids.NodeID, gossipBytes []byte) {
-	// LP-118 does not use AppGossip
+// Gossip implements p2p.Handler. LP-118 does not use gossip, so this is a no-op.
+func (a *HandlerAdapter) Gossip(ctx context.Context, nodeID ids.NodeID, gossipBytes []byte) {
+	// LP-118 does not use Gossip
 }
 
-// AppRequest implements p2p.Handler by delegating to the wrapped lp118.Handler.
-func (a *HandlerAdapter) AppRequest(ctx context.Context, nodeID ids.NodeID, deadline time.Time, requestBytes []byte) ([]byte, *consensuscore.AppError) {
-	response, err := a.handler.AppRequest(ctx, nodeID, deadline, requestBytes)
+// Request implements p2p.Handler by delegating to the wrapped lp118.Handler.
+func (a *HandlerAdapter) Request(ctx context.Context, nodeID ids.NodeID, deadline time.Time, requestBytes []byte) ([]byte, *p2p.Error) {
+	response, err := a.handler.Request(ctx, nodeID, deadline, requestBytes)
 	if err != nil {
-		return nil, &consensuscore.AppError{
+		return nil, &p2p.Error{
 			Code:    500,
 			Message: err.Error(),
 		}
