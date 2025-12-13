@@ -3,13 +3,13 @@ module github.com/luxfi/p2p
 go 1.25.5
 
 require (
-	github.com/luxfi/consensus v1.21.2
-	github.com/luxfi/crypto v1.17.7
-	github.com/luxfi/ids v1.1.2
+	github.com/luxfi/consensus v1.22.5
+	github.com/luxfi/crypto v1.17.18
+	github.com/luxfi/ids v1.2.2
 	github.com/luxfi/log v1.1.24
-	github.com/luxfi/math v0.1.5
+	github.com/luxfi/math v1.0.0
 	github.com/luxfi/metric v1.4.5
-	github.com/luxfi/warp v1.16.25
+	github.com/luxfi/warp v1.16.31
 	github.com/prometheus/client_golang v1.23.2
 	github.com/stretchr/testify v1.11.1
 )
@@ -17,13 +17,14 @@ require (
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/cloudflare/circl v1.6.2-0.20251027185721-da1faa40b98c // indirect
+	github.com/cloudflare/circl v1.6.2-0.20251204010831-23491bd573cf // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/holiman/uint256 v1.3.2 // indirect
-	github.com/luxfi/geth v1.16.39 // indirect
+	github.com/luxfi/geth v1.16.40 // indirect
 	github.com/luxfi/mock v0.1.0 // indirect
-	github.com/luxfi/node v1.20.3 // indirect
+	github.com/luxfi/node v1.21.6 // indirect
+	github.com/luxfi/utils v1.0.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect

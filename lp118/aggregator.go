@@ -96,13 +96,18 @@ func (s *SignatureAggregator) AggregateSignatures(
 			continue
 		}
 
+		nodeID, err := ids.ToNodeID(validator.NodeID)
+		if err != nil {
+			return nil, nil, nil, fmt.Errorf("invalid node ID for validator %d: %w", i, err)
+		}
+
 		v := indexedValidator{
 			Index:     i,
 			Validator: validator,
 		}
 
-		nodeIDsToValidator[validator.NodeID] = v
-		nonSigners = append(nonSigners, validator.NodeID)
+		nodeIDsToValidator[nodeID] = v
+		nonSigners = append(nonSigners, nodeID)
 	}
 
 	// Account for requested signatures + the signature that was provided
