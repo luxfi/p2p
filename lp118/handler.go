@@ -73,7 +73,11 @@ func (h *CachedHandler) Request(ctx context.Context, nodeID ids.NodeID, deadline
 	}
 
 	// Check cache
-	messageID := unsignedMessage.ID()
+	messageIDBytes := unsignedMessage.ID()
+	messageID, err := ids.ToID(messageIDBytes)
+	if err != nil {
+		return nil, fmt.Errorf("invalid message ID: %w", err)
+	}
 	if signatureBytes, ok := h.cache.Get(messageID); ok {
 		return MarshalSignatureResponse(signatureBytes)
 	}
