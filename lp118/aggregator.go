@@ -96,10 +96,7 @@ func (s *SignatureAggregator) AggregateSignatures(
 			continue
 		}
 
-		nodeID, err := ids.ToNodeID(validator.NodeID)
-		if err != nil {
-			return nil, nil, nil, fmt.Errorf("invalid node ID for validator %d: %w", i, err)
-		}
+		nodeID := validator.NodeID
 
 		v := indexedValidator{
 			Index:     i,
