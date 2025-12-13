@@ -3,13 +3,13 @@ module github.com/luxfi/p2p
 go 1.25.5
 
 require (
-	github.com/luxfi/consensus v1.22.5
-	github.com/luxfi/crypto v1.17.18
-	github.com/luxfi/ids v1.2.2
-	github.com/luxfi/log v1.1.24
-	github.com/luxfi/math v1.0.0
-	github.com/luxfi/metric v1.4.5
-	github.com/luxfi/warp v1.16.31
+	github.com/luxfi/consensus v1.22.26
+	github.com/luxfi/crypto v1.17.23
+	github.com/luxfi/ids v1.2.4
+	github.com/luxfi/log v1.1.26
+	github.com/luxfi/math v1.0.2
+	github.com/luxfi/metric v1.4.8
+	github.com/luxfi/warp v1.16.36
 	github.com/prometheus/client_golang v1.23.2
 	github.com/stretchr/testify v1.11.1
 )
