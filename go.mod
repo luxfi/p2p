@@ -4,7 +4,7 @@ go 1.25.5
 
 require (
 	github.com/luxfi/consensus v1.22.26
-	github.com/luxfi/crypto v1.17.23
+	github.com/luxfi/crypto v1.17.25
 	github.com/luxfi/ids v1.2.4
 	github.com/luxfi/log v1.1.26
 	github.com/luxfi/math v1.0.2
@@ -23,6 +23,7 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/holiman/uint256 v1.3.2 // indirect
+	github.com/luxfi/cache v1.0.0 // indirect
 	github.com/luxfi/geth v1.16.53 // indirect
 	github.com/luxfi/mock v0.1.0 // indirect
 	github.com/luxfi/node v1.22.14 // indirect
