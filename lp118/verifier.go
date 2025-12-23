@@ -6,12 +6,12 @@ package lp118
 import (
 	"context"
 
-	"github.com/luxfi/p2p"
 	"github.com/luxfi/warp"
 )
 
 // Verifier verifies warp messages according to LP-118
 type Verifier interface {
-	// Verify verifies an unsigned warp message with justification
-	Verify(ctx context.Context, unsignedMessage *warp.UnsignedMessage, justification []byte) *p2p.Error
+	// Verify verifies an unsigned warp message with justification.
+	// Returns nil on success, or an error if verification fails.
+	Verify(ctx context.Context, unsignedMessage *warp.UnsignedMessage, justification []byte) error
 }
