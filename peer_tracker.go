@@ -17,7 +17,7 @@ import (
 	"github.com/luxfi/metric"
 	consensusversion "github.com/luxfi/consensus/version"
 
-	safemath "github.com/luxfi/math/math"
+	safemath "github.com/luxfi/math"
 )
 
 const (
