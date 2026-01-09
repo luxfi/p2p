@@ -16,8 +16,6 @@ import (
 	"github.com/luxfi/constants"
 	"github.com/luxfi/ids"
 	"github.com/luxfi/vm/utils/linked"
-	utilmetric "github.com/luxfi/vm/utils/metric"
-	"github.com/luxfi/vm/utils/wrappers"
 )
 
 // See inbound_msg_throttler.go
@@ -299,7 +297,7 @@ func (t *inboundMsgByteThrottler) release(metadata *msgMetadata, nodeID ids.Node
 }
 
 type inboundMsgByteThrottlerMetrics struct {
-	acquireLatency        utilmetric.Averager
+	acquireLatency        metric.Averager
 	remainingAtLargeBytes metric.Gauge
 	remainingVdrBytes     metric.Gauge
 	awaitingAcquire       metric.Gauge
@@ -307,13 +305,13 @@ type inboundMsgByteThrottlerMetrics struct {
 }
 
 func (m *inboundMsgByteThrottlerMetrics) initialize(reg metric.Registerer) error {
-	errs := wrappers.Errs{}
+	errs := metric.Errs{}
 	registry, ok := reg.(metric.Registry)
 	if !ok {
 		errs.Add(nil)
 		return errs.Err
 	}
-	m.acquireLatency = utilmetric.NewAveragerWithErrs(
+	m.acquireLatency = metric.NewAveragerWithErrs(
 		"byte_throttler_inbound_acquire_latency",
 		"average time (in ns) to get space on the inbound message byte buffer",
 		registry,
