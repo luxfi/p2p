@@ -8,11 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"go.uber.org/zap"
 	"golang.org/x/time/rate"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/metric"
 )
 
@@ -128,9 +127,9 @@ func (t *bandwidthThrottlerImpl) Acquire(
 	if err := limiter.WaitN(ctx, int(msgSize)); err != nil {
 		// This should only happen on shutdown.
 		t.log.Debug("error while waiting for throttler",
-			"messageSize", msgSize,
-			"nodeID", nodeID,
-			zap.Error(err),
+			log.Int("messageSize", int(msgSize)),
+			log.Stringer("nodeID", nodeID),
+			log.Err(err),
 		)
 	}
 }

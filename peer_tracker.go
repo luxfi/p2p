@@ -11,11 +11,11 @@ import (
 	"sync"
 	"time"
 
+	consensusversion "github.com/luxfi/consensus/version"
 	"github.com/luxfi/ids"
-	"github.com/luxfi/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/math/set"
 	"github.com/luxfi/metric"
-	consensusversion "github.com/luxfi/consensus/version"
 
 	safemath "github.com/luxfi/math"
 )

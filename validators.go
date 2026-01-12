@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luxfi/ids"
 	validators "github.com/luxfi/consensus/validator"
-	"github.com/luxfi/log"
+	"github.com/luxfi/ids"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/math/set"
 )
 

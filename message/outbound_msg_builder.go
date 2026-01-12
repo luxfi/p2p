@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/p2p/proto/pb/p2p"
-	"github.com/luxfi/vm/utils/compression"
-	"github.com/luxfi/vm/utils/ips"
+	"github.com/luxfi/node/proto/pb/p2p"
+	"github.com/luxfi/compress"
+	"github.com/luxfi/net/ips"
 )
 
 var _ OutboundMsgBuilder = (*outMsgBuilder)(nil)
@@ -188,14 +188,14 @@ type OutboundMsgBuilder interface {
 }
 
 type outMsgBuilder struct {
-	compressionType compression.Type
+	compressionType compress.Type
 
 	builder *msgBuilder
 }
 
 // Use "message.NewCreator" to import this function
 // since we do not expose "msgBuilder" yet
-func newOutboundBuilder(compressionType compression.Type, builder *msgBuilder) OutboundMsgBuilder {
+func newOutboundBuilder(compressionType compress.Type, builder *msgBuilder) OutboundMsgBuilder {
 	return &outMsgBuilder{
 		compressionType: compressionType,
 		builder:         builder,
@@ -213,7 +213,7 @@ func (b *outMsgBuilder) Ping(
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }
@@ -225,7 +225,7 @@ func (b *outMsgBuilder) Pong() (OutboundMessage, error) {
 				Pong: &p2p.Pong{},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }
@@ -248,8 +248,8 @@ func (b *outMsgBuilder) Handshake(
 	knownPeersSalt []byte,
 	requestAllNetIPs bool,
 ) (OutboundMessage, error) {
-	subsubsubnetIDBytes := make([][]byte, len(trackedNets))
-	encodeIDs(trackedNets, subsubsubnetIDBytes)
+	subsubchainIDBytes := make([][]byte, len(trackedNets))
+	encodeIDs(trackedNets, subsubchainIDBytes)
 	return b.builder.createOutbound(
 		&p2p.Message{
 			Message: &p2p.Message_Handshake{
@@ -260,7 +260,7 @@ func (b *outMsgBuilder) Handshake(
 					IpPort:        uint32(ip.Port()),
 					IpSigningTime: ipSigningTime,
 					IpNodeIdSig:   ipNodeIDSig,
-					TrackedNets:   subsubsubnetIDBytes,
+					TrackedNets:   subsubchainIDBytes,
 					Client: &p2p.Client{
 						Name:  client,
 						Major: major,
@@ -274,11 +274,11 @@ func (b *outMsgBuilder) Handshake(
 						Salt:   knownPeersSalt,
 					},
 					IpBlsSig: ipBLSSig,
-					AllNets:  requestAllNetIPs,
+					AllChains:  requestAllNetIPs,
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		true,
 	)
 }
@@ -296,7 +296,7 @@ func (b *outMsgBuilder) GetPeerList(
 						Filter: knownPeersFilter,
 						Salt:   knownPeersSalt,
 					},
-					AllNets: requestAllNetIPs,
+					AllChains: requestAllNetIPs,
 				},
 			},
 		},
@@ -345,7 +345,7 @@ func (b *outMsgBuilder) GetStateSummaryFrontier(
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }
@@ -429,7 +429,7 @@ func (b *outMsgBuilder) GetAcceptedFrontier(
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }
@@ -449,7 +449,7 @@ func (b *outMsgBuilder) AcceptedFrontier(
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }
@@ -473,7 +473,7 @@ func (b *outMsgBuilder) GetAccepted(
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }
@@ -495,7 +495,7 @@ func (b *outMsgBuilder) Accepted(
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }
@@ -519,7 +519,7 @@ func (b *outMsgBuilder) GetAncestors(
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }
@@ -561,7 +561,7 @@ func (b *outMsgBuilder) Get(
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }
@@ -629,7 +629,7 @@ func (b *outMsgBuilder) PullQuery(
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }
@@ -655,7 +655,7 @@ func (b *outMsgBuilder) Chits(
 				},
 			},
 		},
-		compression.TypeNone,
+		compress.TypeNone,
 		false,
 	)
 }

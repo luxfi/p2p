@@ -12,14 +12,14 @@ import (
 	"time"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/math/set"
 	"github.com/luxfi/p2p/message"
 	"github.com/luxfi/p2p/throttling"
-	"github.com/luxfi/vm/utils"
-	"github.com/luxfi/vm/utils/compression"
-	"github.com/luxfi/vm/utils/ips"
 	luxtls "github.com/luxfi/tls"
+	"github.com/luxfi/utils"
+	"github.com/luxfi/compress"
+	"github.com/luxfi/net/ips"
 	"github.com/luxfi/version"
 )
 
@@ -44,7 +44,7 @@ func FuzzPeerMessageHandling(f *testing.F) {
 		// Create message creator
 		mc, err := message.NewCreator(
 			nil, // metric.Registerer
-			compression.TypeZstd,
+			compress.TypeZstd,
 			10*time.Second,
 		)
 		if err != nil {
@@ -160,7 +160,7 @@ func FuzzPeerMessageHandling(f *testing.F) {
 
 		// Test that handling doesn't panic
 		// Use atomic operations for lastReceived (int64)
-		// and Set method for finishedHandshake (utils.Atomic[bool])
+		// and Set method for finishedHandshake (atomic.Atomic[bool])
 		now := time.Now().Unix()
 		switch inMsg.Op() {
 		case message.PingOp:
@@ -193,7 +193,7 @@ func FuzzPeerStateMachine(f *testing.F) {
 		// Create message creator
 		mc, err := message.NewCreator(
 			nil,
-			compression.TypeZstd,
+			compress.TypeZstd,
 			10*time.Second,
 		)
 		if err != nil {
@@ -218,7 +218,7 @@ func FuzzPeerStateMachine(f *testing.F) {
 			Config:            config,
 			id:                ids.GenerateTestNodeID(),
 			trackedChains:     make(set.Set[ids.ID]),
-			finishedHandshake: utils.Atomic[bool]{},
+			finishedHandshake: atomic.Atomic[bool]{},
 			onClosed:          make(chan struct{}),
 		}
 
@@ -294,7 +294,7 @@ func FuzzPeerConnection(f *testing.F) {
 		// Create message
 		mc, err := message.NewCreator(
 			nil, // metric.Registerer
-			compression.TypeZstd,
+			compress.TypeZstd,
 			10*time.Second,
 		)
 		if err != nil {

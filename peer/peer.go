@@ -18,19 +18,19 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/luxfi/log"
+	log "github.com/luxfi/log"
 
+	luxatomic "github.com/luxfi/atomic"
+	"github.com/luxfi/cache/bloom"
+	"github.com/luxfi/codec/jsonrpc"
+	"github.com/luxfi/codec/wrappers"
 	"github.com/luxfi/constants"
 	"github.com/luxfi/crypto/bls"
 	"github.com/luxfi/ids"
 	"github.com/luxfi/math/set"
+	"github.com/luxfi/net/ips"
+	"github.com/luxfi/node/proto/pb/p2p"
 	"github.com/luxfi/p2p/message"
-	"github.com/luxfi/p2p/proto/pb/p2p"
-	"github.com/luxfi/vm/utils"
-	"github.com/luxfi/vm/utils/bloom"
-	"github.com/luxfi/vm/utils/ips"
-	"github.com/luxfi/codec/jsonrpc"
-	"github.com/luxfi/vm/utils/wrappers"
 	luxtls "github.com/luxfi/tls"
 	"github.com/luxfi/version"
 )
@@ -162,19 +162,19 @@ type peer struct {
 	txIDOfVerifiedBLSKey ids.ID
 
 	// Our primary network uptime perceived by the peer
-	observedUptime utils.Atomic[uint32]
+	observedUptime luxatomic.Atomic[uint32]
 
 	// True if this peer has sent us a valid Handshake message and
 	// is running a compatible version.
 	// Only modified on the connection's reader routine.
-	gotHandshake utils.Atomic[bool]
+	gotHandshake luxatomic.Atomic[bool]
 
 	// True if the peer:
 	// * Has sent us a Handshake message
 	// * Has sent us a PeerList message
 	// * Is running a compatible version
 	// Only modified on the connection's reader routine.
-	finishedHandshake utils.Atomic[bool]
+	finishedHandshake luxatomic.Atomic[bool]
 
 	// onFinishHandshake is closed when the peer finishes the p2p handshake.
 	onFinishHandshake chan struct{}
@@ -328,7 +328,7 @@ func (p *peer) StartClose() {
 	p.startClosingOnce.Do(func() {
 		if p.conn != nil {
 			if err := p.conn.Close(); err != nil {
-				if p.Log != nil {
+				if !p.Log.IsZero() {
 					p.Log.Debug("failed to close connection",
 						log.Stringer("nodeID", p.id),
 						log.Reflect("error", err),
@@ -1064,7 +1064,7 @@ func (p *peer) handleHandshake(msg *p2p.Handshake) {
 
 	p.gotHandshake.Set(true)
 
-	peerIPs := p.Network.Peers(p.id, p.trackedChains, msg.AllNets, knownPeers, salt)
+	peerIPs := p.Network.Peers(p.id, p.trackedChains, msg.AllChains, knownPeers, salt)
 
 	// We bypass throttling here to ensure that the handshake message is
 	// acknowledged correctly.
@@ -1126,7 +1126,7 @@ func (p *peer) handleGetPeerList(msg *p2p.GetPeerList) {
 		return
 	}
 
-	peerIPs := p.Network.Peers(p.id, p.trackedChains, msg.AllNets, filter, salt)
+	peerIPs := p.Network.Peers(p.id, p.trackedChains, msg.AllChains, filter, salt)
 	if len(peerIPs) == 0 {
 		p.Log.Debug("skipping sending of empty peer list",
 			log.Stringer("nodeID", p.id),

@@ -17,8 +17,8 @@ import (
 	time "time"
 
 	ids "github.com/luxfi/ids"
-	p2p "github.com/luxfi/p2p/proto/pb/p2p"
-	ips "github.com/luxfi/vm/utils/ips"
+	p2p "github.com/luxfi/node/proto/pb/p2p"
+	ips "github.com/luxfi/net/ips"
 )
 
 // MockOutboundMsgBuilder is a mock of OutboundMsgBuilder interface.

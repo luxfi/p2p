@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/luxfi/ids"
-	"github.com/prometheus/client_golang/prometheus"
+	"github.com/luxfi/metric"
 	"github.com/stretchr/testify/require"
 )
 
@@ -25,7 +25,7 @@ func TestBloomFilterBasic(t *testing.T) {
 
 	// Create bloom filter with reasonable parameters
 	bf, err := NewBloomFilter(
-		prometheus.NewRegistry(),
+		metric.NewRegistry(),
 		"test",
 		100,   // minTargetElements
 		0.01,  // targetFalsePositiveRate
@@ -60,7 +60,7 @@ func TestBloomFilterMarshal(t *testing.T) {
 	require := require.New(t)
 
 	bf, err := NewBloomFilter(
-		prometheus.NewRegistry(),
+		metric.NewRegistry(),
 		"test",
 		100,
 		0.01,
@@ -83,7 +83,7 @@ func TestBloomFilterSalt(t *testing.T) {
 	require := require.New(t)
 
 	bf, err := NewBloomFilter(
-		prometheus.NewRegistry(),
+		metric.NewRegistry(),
 		"test",
 		100,
 		0.01,
@@ -101,11 +101,11 @@ func TestResetBloomFilterIfNeeded(t *testing.T) {
 
 	// Create bloom filter that will reset after just 1 element
 	bf, err := NewBloomFilter(
-		prometheus.NewRegistry(),
+		metric.NewRegistry(),
 		"test",
-		1,                   // minTargetElements
-		0.01,                // targetFalsePositiveRate
-		0.0000000000000001,  // very low reset threshold
+		1,                  // minTargetElements
+		0.01,               // targetFalsePositiveRate
+		0.0000000000000001, // very low reset threshold
 	)
 	require.NoError(err)
 
@@ -130,9 +130,9 @@ func TestBloomFilterNoResetNotNeeded(t *testing.T) {
 	require := require.New(t)
 
 	bf, err := NewBloomFilter(
-		prometheus.NewRegistry(),
+		metric.NewRegistry(),
 		"test",
-		1000,  // large capacity
+		1000, // large capacity
 		0.01,
 		0.001,
 	)

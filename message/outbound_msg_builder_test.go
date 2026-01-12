@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/vm/utils/compression"
+	"github.com/luxfi/compress"
 )
 
 func Test_newOutboundBuilder(t *testing.T) {
@@ -23,9 +23,9 @@ func Test_newOutboundBuilder(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	for _, compressionType := range []compression.Type{
-		compression.TypeNone,
-		compression.TypeZstd,
+	for _, compressionType := range []compress.Type{
+		compress.TypeNone,
+		compress.TypeZstd,
 	} {
 		t.Run(compressionType.String(), func(t *testing.T) {
 			builder := newOutboundBuilder(compressionType, mb)

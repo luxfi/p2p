@@ -11,10 +11,10 @@ import (
 	"sync"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/p2p/message"
 	"github.com/luxfi/p2p/throttling"
-	"github.com/luxfi/vm/utils/buffer"
+	"github.com/luxfi/container/buffer"
 )
 
 const initialQueueSize = 64
