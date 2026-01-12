@@ -14,12 +14,12 @@ import (
 	validators "github.com/luxfi/consensus/validator"
 	"github.com/luxfi/consensus/validator/uptime"
 	"github.com/luxfi/ids"
-	"github.com/luxfi/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/math/set"
 	"github.com/luxfi/p2p/message"
 	"github.com/luxfi/p2p/throttling"
 	"github.com/luxfi/p2p/tracker"
-	"github.com/luxfi/vm/utils/timer/mockable"
+	"github.com/luxfi/timer/mockable"
 	"github.com/luxfi/version"
 )
 

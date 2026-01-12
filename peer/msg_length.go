@@ -11,7 +11,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/vm/utils/wrappers"
+	"github.com/luxfi/codec/wrappers"
 )
 
 var (

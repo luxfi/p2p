@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/vm/utils"
+	"github.com/luxfi/utils"
 )
 
 func TestSet(t *testing.T) {
@@ -22,11 +22,11 @@ func TestSet(t *testing.T) {
 
 	peer1 := &peer{
 		id:             ids.BuildTestNodeID([]byte{0x01}),
-		observedUptime: *utils.NewAtomic[uint32](0),
+		observedUptime: *atomic.NewAtomic[uint32](0),
 	}
 	updatedPeer1 := &peer{
 		id:             ids.BuildTestNodeID([]byte{0x01}),
-		observedUptime: *utils.NewAtomic[uint32](1),
+		observedUptime: *atomic.NewAtomic[uint32](1),
 	}
 	peer2 := &peer{
 		id: ids.BuildTestNodeID([]byte{0x02}),

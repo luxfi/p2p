@@ -10,9 +10,9 @@ import (
 	"net/netip"
 	"time"
 
+	"github.com/luxfi/codec/jsonrpc"
 	"github.com/luxfi/ids"
 	"github.com/luxfi/math/set"
-	"github.com/luxfi/codec/jsonrpc"
 )
 
 type Info struct {

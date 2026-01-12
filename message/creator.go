@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/luxfi/metric"
-	"github.com/luxfi/vm/utils/compression"
+	"github.com/luxfi/compress"
 )
 
 var _ Creator = (*creator)(nil)
@@ -24,7 +24,7 @@ type creator struct {
 
 func NewCreator(
 	metrics metric.Registerer,
-	compressionType compression.Type,
+	compressionType compress.Type,
 	maxMessageTimeout time.Duration,
 ) (Creator, error) {
 	builder, err := newMsgBuilder(

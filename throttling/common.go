@@ -8,7 +8,7 @@ import (
 
 	validators "github.com/luxfi/consensus/validator"
 	"github.com/luxfi/ids"
-	"github.com/luxfi/log"
+	log "github.com/luxfi/log"
 )
 
 // Used by the sybil-safe inbound and outbound message throttlers

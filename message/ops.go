@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/math/set"
-	"github.com/luxfi/p2p/proto/pb/p2p"
+	"github.com/luxfi/node/proto/pb/p2p"
 )
 
 // Op is an opcode

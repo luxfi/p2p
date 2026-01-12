@@ -13,10 +13,10 @@ import (
 
 	"github.com/luxfi/metric"
 
-	"github.com/luxfi/ids"
 	validators "github.com/luxfi/consensus/validator"
 	consensusversion "github.com/luxfi/consensus/version"
-	"github.com/luxfi/log"
+	"github.com/luxfi/ids"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/math/set"
 )
 
@@ -77,8 +77,7 @@ func NewNetwork(
 		),
 	}
 
-	err := errors.Join(
-	)
+	err := errors.Join()
 	if err != nil {
 		return nil, err
 	}

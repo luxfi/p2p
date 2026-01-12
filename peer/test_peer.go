@@ -10,19 +10,19 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/luxfi/metric"
-
+	"github.com/luxfi/atomic"
+	"github.com/luxfi/log"
+	"github.com/luxfi/compress"
 	validators "github.com/luxfi/consensus/validator"
 	"github.com/luxfi/consensus/validator/uptime"
 	"github.com/luxfi/constants"
 	"github.com/luxfi/crypto/bls/signer/localsigner"
 	"github.com/luxfi/ids"
 	"github.com/luxfi/math/set"
+	"github.com/luxfi/metric"
 	"github.com/luxfi/p2p/message"
 	"github.com/luxfi/p2p/throttling"
 	"github.com/luxfi/p2p/tracker"
-	"github.com/luxfi/vm/utils"
-	"github.com/luxfi/vm/utils/compression"
 	luxtls "github.com/luxfi/tls"
 	"github.com/luxfi/upgrade"
 	"github.com/luxfi/version"
@@ -80,18 +80,18 @@ func StartTestPeer(
 	}
 
 	// Create a metrics registry
-	promRegistry := metric.NewPrometheusRegistry()
+	reg := metric.NewRegistry()
 
 	mc, err := message.NewCreator(
-		promRegistry,
-		compression.Type(constants.DefaultNetworkCompressionType),
+		reg,
+		compress.Type(constants.DefaultNetworkCompressionType),
 		10*time.Second,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	peerMetrics, err := NewMetrics(promRegistry)
+	peerMetrics, err := NewMetrics(reg)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func StartTestPeer(
 		&Config{
 			Metrics:              peerMetrics,
 			MessageCreator:       mc,
-			Log:                  nil,
+			Log:                  log.Noop(),
 			InboundMsgThrottler:  throttling.NewNoInboundThrottler(),
 			Network:              TestNetwork,
 			Router:               router,
@@ -131,7 +131,7 @@ func StartTestPeer(
 			ResourceTracker:      resourceTracker,
 			UptimeCalculator:     uptime.NoOpCalculator{},
 			IPSigner: NewIPSigner(
-				utils.NewAtomic(netip.AddrPortFrom(
+				atomic.NewAtomic(netip.AddrPortFrom(
 					netip.IPv6Loopback(),
 					1,
 				)),
@@ -144,7 +144,7 @@ func StartTestPeer(
 		peerID,
 		NewBlockingMessageQueue(
 			nil,
-			nil,
+			log.Noop(),
 			maxMessageToSend,
 		),
 		false,

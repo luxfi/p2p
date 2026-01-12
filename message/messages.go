@@ -11,9 +11,9 @@ import (
 	"github.com/luxfi/constants"
 	"github.com/luxfi/ids"
 	"github.com/luxfi/metric"
-	"github.com/luxfi/p2p/proto/pb/p2p"
-	"github.com/luxfi/vm/utils/compression"
-	"github.com/luxfi/vm/utils/timer/mockable"
+	"github.com/luxfi/node/proto/pb/p2p"
+	"github.com/luxfi/timer/mockable"
+	"github.com/luxfi/compress"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -134,7 +134,7 @@ func (m *outboundMessage) BytesSavedCompression() int {
 }
 
 type msgBuilder struct {
-	zstdCompressor compression.Compressor
+	zstdCompressor compress.Compressor
 	count          metric.CounterVec // type + op + direction
 	duration       metric.GaugeVec   // type + op + direction
 
@@ -145,7 +145,7 @@ func newMsgBuilder(
 	metrics metric.Registerer,
 	maxMessageTimeout time.Duration,
 ) (*msgBuilder, error) {
-	zstdCompressor, err := compression.NewZstdCompressor(constants.DefaultMaxMessageSize)
+	zstdCompressor, err := compress.NewZstdCompressor(constants.DefaultMaxMessageSize)
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +174,7 @@ func newMsgBuilder(
 
 func (mb *msgBuilder) marshal(
 	uncompressedMsg *p2p.Message,
-	compressionType compression.Type,
+	compressionType compress.Type,
 ) ([]byte, int, Op, error) {
 	uncompressedMsgBytes, err := proto.Marshal(uncompressedMsg)
 	if err != nil {
@@ -197,9 +197,9 @@ func (mb *msgBuilder) marshal(
 		compressedMsg p2p.Message
 	)
 	switch compressionType {
-	case compression.TypeNone:
+	case compress.TypeNone:
 		return uncompressedMsgBytes, 0, op, nil
-	case compression.TypeZstd:
+	case compress.TypeZstd:
 		compressedBytes, err := mb.zstdCompressor.Compress(uncompressedMsgBytes)
 		if err != nil {
 			return nil, 0, 0, err
@@ -239,7 +239,7 @@ func (mb *msgBuilder) unmarshal(b []byte) (*p2p.Message, int, Op, error) {
 
 	// Figure out what compression type, if any, was used to compress the message.
 	var (
-		compressor      compression.Compressor
+		compressor      compress.Compressor
 		compressedBytes []byte
 		zstdCompressed  = m.GetCompressedZstd()
 	)
@@ -273,7 +273,7 @@ func (mb *msgBuilder) unmarshal(b []byte) (*p2p.Message, int, Op, error) {
 	}
 
 	labels := metric.Labels{
-		typeLabel:      compression.TypeZstd.String(),
+		typeLabel:      compress.TypeZstd.String(),
 		opLabel:        op.String(),
 		directionLabel: decompressionLabel,
 	}
@@ -283,7 +283,7 @@ func (mb *msgBuilder) unmarshal(b []byte) (*p2p.Message, int, Op, error) {
 	return m, bytesSavedCompression, op, nil
 }
 
-func (mb *msgBuilder) createOutbound(m *p2p.Message, compressionType compression.Type, bypassThrottling bool) (*outboundMessage, error) {
+func (mb *msgBuilder) createOutbound(m *p2p.Message, compressionType compress.Type, bypassThrottling bool) (*outboundMessage, error) {
 	b, saved, op, err := mb.marshal(m, compressionType)
 	if err != nil {
 		return nil, err

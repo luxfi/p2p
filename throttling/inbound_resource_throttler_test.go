@@ -20,8 +20,8 @@ import (
 	"github.com/luxfi/math/meter"
 	"github.com/luxfi/p2p/tracker"
 	"github.com/luxfi/p2p/tracker/trackermock"
-	"github.com/luxfi/vm/utils/resource"
-	"github.com/luxfi/vm/utils/timer/mockable"
+	"github.com/luxfi/timer/mockable"
+	"github.com/luxfi/resource"
 	"github.com/stretchr/testify/require"
 )
 
