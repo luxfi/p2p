@@ -22,11 +22,11 @@ func TestSet(t *testing.T) {
 
 	peer1 := &peer{
 		id:             ids.BuildTestNodeID([]byte{0x01}),
-		observedUptime: *atomic.NewAtomic[uint32](0),
+		observedUptime: *utils.NewAtomic[uint32](0),
 	}
 	updatedPeer1 := &peer{
 		id:             ids.BuildTestNodeID([]byte{0x01}),
-		observedUptime: *atomic.NewAtomic[uint32](1),
+		observedUptime: *utils.NewAtomic[uint32](1),
 	}
 	peer2 := &peer{
 		id: ids.BuildTestNodeID([]byte{0x02}),

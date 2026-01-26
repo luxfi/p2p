@@ -53,10 +53,10 @@ func TestClient_Gossip(t *testing.T) {
 
 func TestClient_Request(t *testing.T) {
 	tests := []struct {
-		name     string
-		response []byte
-		respErr  error
-		requestF func(ctx context.Context, client *p2p.Client, onResponse p2p.ResponseCallback) error
+		name        string
+		response    []byte
+		respErr     error
+		requestF    func(ctx context.Context, client *p2p.Client, onResponse p2p.ResponseCallback) error
 	}{
 		{
 			name:     "Request - response",

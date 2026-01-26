@@ -24,15 +24,15 @@ import (
 	"github.com/luxfi/crypto/bls"
 	"github.com/luxfi/crypto/bls/signer/localsigner"
 	"github.com/luxfi/ids"
-	log "github.com/luxfi/log"
+	"github.com/luxfi/log"
 	"github.com/luxfi/math/set"
 	"github.com/luxfi/p2p/message"
 	"github.com/luxfi/p2p/throttling"
 	"github.com/luxfi/p2p/tracker"
+	"github.com/luxfi/utils"
+	"github.com/luxfi/node/utils/compression"
 	luxtls "github.com/luxfi/tls"
 	"github.com/luxfi/upgrade"
-	"github.com/luxfi/utils"
-	"github.com/luxfi/compress"
 	"github.com/luxfi/version"
 )
 
@@ -106,7 +106,7 @@ func newMessageCreator(t *testing.T) message.Creator {
 
 	mc, err := message.NewCreator(
 		metric.NewRegistry(),
-		compress.Type(constants.DefaultNetworkCompressionType),
+		compression.Type(constants.DefaultNetworkCompressionType),
 		10*time.Second,
 	)
 	require.NoError(t, err)
@@ -160,7 +160,7 @@ func newRawTestPeer(t *testing.T, config *Config) *rawTestPeer {
 	require.NoError(err)
 	config.MyNodeID = ids.NodeIDFromCert(cert)
 
-	ip := atomic.NewAtomic(netip.AddrPortFrom(
+	ip := utils.NewAtomic(netip.AddrPortFrom(
 		netip.IPv6Loopback(),
 		1,
 	))

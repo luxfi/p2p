@@ -4,9 +4,11 @@
 package throttling
 
 import (
+	"go.uber.org/zap"
+
 	"errors"
 
-	log "github.com/luxfi/log"
+	"github.com/luxfi/log"
 	"github.com/luxfi/metric"
 
 	validators "github.com/luxfi/consensus/validator"
@@ -90,7 +92,7 @@ func (t *outboundMsgThrottler) Acquire(msg message.OutboundMessage, nodeID ids.N
 		totalWeight, err := t.vdrs.TotalWeight(constants.PrimaryNetworkID)
 		if err != nil {
 			t.log.Error("Failed to get total weight of primary network validators",
-				log.Err(err),
+				zap.Error(err),
 			)
 		} else {
 			vdrAllocationSize = uint64(float64(t.maxVdrBytes) * float64(weight) / float64(totalWeight))

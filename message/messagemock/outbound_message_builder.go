@@ -16,8 +16,8 @@ import (
 
 	ids "github.com/luxfi/ids"
 	message "github.com/luxfi/p2p/message"
-	p2p "github.com/luxfi/node/proto/pb/p2p"
-	ips "github.com/luxfi/net/ips"
+	p2p "github.com/luxfi/p2p/proto/pb/p2p"
+	ips "github.com/luxfi/node/utils/ips"
 	gomock "go.uber.org/mock/gomock"
 )
 

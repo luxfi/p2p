@@ -4,16 +4,18 @@
 package throttling
 
 import (
+	"go.uber.org/zap"
+
 	"context"
 	"time"
 
-	log "github.com/luxfi/log"
+	"github.com/luxfi/log"
 	"github.com/luxfi/metric"
 
 	validators "github.com/luxfi/consensus/validator"
 	"github.com/luxfi/constants"
 	"github.com/luxfi/ids"
-	"github.com/luxfi/container/linked"
+	"github.com/luxfi/node/utils/linked"
 )
 
 // See inbound_msg_throttler.go
@@ -131,7 +133,7 @@ func (t *inboundMsgByteThrottler) Acquire(ctx context.Context, msgSize uint64, n
 		totalWeight, err := t.vdrs.TotalWeight(constants.PrimaryNetworkID)
 		if err != nil {
 			t.log.Error("couldn't get total weight of primary network",
-				log.Err(err),
+				zap.Error(err),
 			)
 		} else {
 			vdrAllocationSize = uint64(float64(t.maxVdrBytes) * float64(weight) / float64(totalWeight))

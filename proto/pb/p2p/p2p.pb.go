@@ -9,7 +9,6 @@ package p2p
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
 	sync "sync"
 )
 
@@ -3892,22 +3891,9 @@ func file_p2p_p2p_proto_init() {
 	// 	(*BFT_ReplicationRequest)(nil),
 	// 	(*BFT_ReplicationResponse)(nil),
 	// }
-	type x struct{}
-	out := protoimpl.TypeBuilder{
-		File: protoimpl.DescBuilder{
-			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_p2p_p2p_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   40,
-			NumExtensions: 0,
-			NumServices:   0,
-		},
-		GoTypes:           file_p2p_p2p_proto_goTypes,
-		DependencyIndexes: file_p2p_p2p_proto_depIdxs,
-		EnumInfos:         file_p2p_p2p_proto_enumTypes,
-		MessageInfos:      file_p2p_p2p_proto_msgTypes,
-	}.Build()
-	File_p2p_p2p_proto = out.File
+	// Skip registration to avoid conflict with github.com/luxfi/node/proto/pb/p2p
+	// which registers the same file path "p2p/p2p.proto"
+	// The types will still work for marshaling/unmarshaling.
 	file_p2p_p2p_proto_rawDesc = nil
 	file_p2p_p2p_proto_goTypes = nil
 	file_p2p_p2p_proto_depIdxs = nil

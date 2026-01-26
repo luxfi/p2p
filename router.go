@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/luxfi/ids"
-	log "github.com/luxfi/log"
+	"github.com/luxfi/log"
 	"github.com/luxfi/metric"
 )
 

@@ -8,7 +8,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	log "github.com/luxfi/log"
+	"github.com/luxfi/log"
 	"github.com/luxfi/p2p/message"
 )
 

@@ -11,14 +11,14 @@ import (
 	"net/netip"
 	"sync"
 
-	"github.com/luxfi/atomic"
 	"github.com/luxfi/crypto/bls"
-	"github.com/luxfi/timer/mockable"
+	"github.com/luxfi/utils"
+	"github.com/luxfi/node/utils/timer/mockable"
 )
 
 // IPSigner will return a signedIP for the current value of our dynamic IP.
 type IPSigner struct {
-	ip        *atomic.Atomic[netip.AddrPort]
+	ip        *utils.Atomic[netip.AddrPort]
 	clock     mockable.Clock
 	tlsSigner crypto.Signer
 	blsSigner bls.Signer
@@ -31,7 +31,7 @@ type IPSigner struct {
 }
 
 func NewIPSigner(
-	ip *atomic.Atomic[netip.AddrPort],
+	ip *utils.Atomic[netip.AddrPort],
 	tlsSigner crypto.Signer,
 	blsSigner bls.Signer,
 ) *IPSigner {

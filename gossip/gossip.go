@@ -14,7 +14,7 @@ import (
 	"github.com/luxfi/metric"
 
 	"github.com/luxfi/ids"
-	log "github.com/luxfi/log"
+	"github.com/luxfi/log"
 	"github.com/luxfi/math/set"
 	"github.com/luxfi/p2p"
 )

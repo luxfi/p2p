@@ -15,14 +15,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/luxfi/crypto/bls/signer/localsigner"
-	luxtls "github.com/luxfi/tls"
 	"github.com/luxfi/utils"
+	luxtls "github.com/luxfi/tls"
 )
 
 func TestIPSigner(t *testing.T) {
 	require := require.New(t)
 
-	dynIP := atomic.NewAtomic(netip.AddrPortFrom(
+	dynIP := utils.NewAtomic(netip.AddrPortFrom(
 		netip.IPv6Loopback(),
 		0,
 	))

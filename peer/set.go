@@ -8,7 +8,7 @@ package peer
 
 import (
 	"github.com/luxfi/ids"
-	"github.com/luxfi/container/sampler"
+	"github.com/luxfi/node/utils/sampler"
 )
 
 var _ Set = (*peerSet)(nil)
