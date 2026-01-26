@@ -14,8 +14,8 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/node/proto/pb/p2p"
-	"github.com/luxfi/compress"
+	"github.com/luxfi/p2p/proto/pb/p2p"
+	"github.com/luxfi/node/utils/compression"
 )
 
 var (
@@ -69,7 +69,7 @@ func BenchmarkMarshalHandshake(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if useBuilder {
-			_, err = codec.createOutbound(&msg, compress.TypeNone, false)
+			_, err = codec.createOutbound(&msg, compression.TypeNone, false)
 		} else {
 			_, err = proto.Marshal(&msg)
 		}

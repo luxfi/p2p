@@ -17,8 +17,8 @@ import (
 
 	"github.com/luxfi/crypto/bls"
 	"github.com/luxfi/crypto/hash"
+	"github.com/luxfi/node/utils/wrappers"
 	luxtls "github.com/luxfi/tls"
-	"github.com/luxfi/codec/wrappers"
 )
 
 var (

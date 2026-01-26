@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/node/proto/pb/p2p"
-	"github.com/luxfi/timer/mockable"
-	"github.com/luxfi/compress"
+	"github.com/luxfi/p2p/proto/pb/p2p"
+	"github.com/luxfi/node/utils/compression"
+	"github.com/luxfi/node/utils/timer/mockable"
 )
 
 func Test_newMsgBuilder(t *testing.T) {
@@ -409,7 +409,7 @@ func TestAppError(t *testing.T) {
 		},
 	}
 
-	outMsg, err := mb.createOutbound(want, compress.TypeNone, false)
+	outMsg, err := mb.createOutbound(want, compression.TypeNone, false)
 	require.NoError(err)
 
 	got, err := mb.parseInbound(outMsg.Bytes(), nodeID, func() {})
