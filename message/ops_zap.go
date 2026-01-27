@@ -1,4 +1,4 @@
-//go:build grpc
+//go:build !grpc
 
 // Copyright (C) 2019-2025, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
@@ -67,8 +67,7 @@ const (
 
 var (
 	// UnrequestedOps are operations that are expected to be seen without having
-	// requested them. For example, a peer may receive a Get request for a block
-	// without having sent a message previously.
+	// requested them.
 	UnrequestedOps = set.Of(
 		GetAcceptedFrontierOp,
 		GetAcceptedOp,
@@ -185,94 +184,87 @@ func (op Op) String() string {
 }
 
 func Unwrap(m *p2p.Message) (fmt.Stringer, error) {
-	switch msg := m.GetMessage().(type) {
-	// Handshake:
-	case *p2p.Message_Ping:
-		return msg.Ping, nil
-	case *p2p.Message_Pong:
-		return msg.Pong, nil
-	case *p2p.Message_Handshake:
-		return msg.Handshake, nil
-	case *p2p.Message_GetPeerList:
-		return msg.GetPeerList, nil
-	case *p2p.Message_PeerList_:
-		return msg.PeerList_, nil
-	// State sync:
-	case *p2p.Message_GetStateSummaryFrontier:
-		return msg.GetStateSummaryFrontier, nil
-	case *p2p.Message_StateSummaryFrontier_:
-		return msg.StateSummaryFrontier_, nil
-	case *p2p.Message_GetAcceptedStateSummary:
-		return msg.GetAcceptedStateSummary, nil
-	case *p2p.Message_AcceptedStateSummary_:
-		return msg.AcceptedStateSummary_, nil
-	// Bootstrapping:
-	case *p2p.Message_GetAcceptedFrontier:
-		return msg.GetAcceptedFrontier, nil
-	case *p2p.Message_AcceptedFrontier_:
-		return msg.AcceptedFrontier_, nil
-	case *p2p.Message_GetAccepted:
-		return msg.GetAccepted, nil
-	case *p2p.Message_Accepted_:
-		return msg.Accepted_, nil
-	case *p2p.Message_GetAncestors:
-		return msg.GetAncestors, nil
-	case *p2p.Message_Ancestors_:
-		return msg.Ancestors_, nil
-	// Consensus:
-	case *p2p.Message_Get:
-		return msg.Get, nil
-	case *p2p.Message_Put:
-		return msg.Put, nil
-	case *p2p.Message_PushQuery:
-		return msg.PushQuery, nil
-	case *p2p.Message_PullQuery:
-		return msg.PullQuery, nil
-	case *p2p.Message_Chits:
-		return msg.Chits, nil
-	// Application:
-	case *p2p.Message_AppRequest:
-		return msg.AppRequest, nil
-	case *p2p.Message_AppResponse:
-		return msg.AppResponse, nil
-	case *p2p.Message_AppError:
-		return msg.AppError, nil
-	case *p2p.Message_AppGossip:
-		return msg.AppGossip, nil
-	// Simplex
-	case *p2p.Message_Simplex:
-		return msg.Simplex, nil
+	switch {
+	case m.Ping != nil:
+		return m.Ping, nil
+	case m.Pong != nil:
+		return m.Pong, nil
+	case m.Handshake != nil:
+		return m.Handshake, nil
+	case m.GetPeerList != nil:
+		return m.GetPeerList, nil
+	case m.PeerList != nil:
+		return m.PeerList, nil
+	case m.GetStateSummaryFrontier != nil:
+		return m.GetStateSummaryFrontier, nil
+	case m.StateSummaryFrontier != nil:
+		return m.StateSummaryFrontier, nil
+	case m.GetAcceptedStateSummary != nil:
+		return m.GetAcceptedStateSummary, nil
+	case m.AcceptedStateSummary != nil:
+		return m.AcceptedStateSummary, nil
+	case m.GetAcceptedFrontier != nil:
+		return m.GetAcceptedFrontier, nil
+	case m.AcceptedFrontier != nil:
+		return m.AcceptedFrontier, nil
+	case m.GetAccepted != nil:
+		return m.GetAccepted, nil
+	case m.Accepted != nil:
+		return m.Accepted, nil
+	case m.GetAncestors != nil:
+		return m.GetAncestors, nil
+	case m.Ancestors != nil:
+		return m.Ancestors, nil
+	case m.Get != nil:
+		return m.Get, nil
+	case m.Put != nil:
+		return m.Put, nil
+	case m.PushQuery != nil:
+		return m.PushQuery, nil
+	case m.PullQuery != nil:
+		return m.PullQuery, nil
+	case m.Chits != nil:
+		return m.Chits, nil
+	case m.AppRequest != nil:
+		return m.AppRequest, nil
+	case m.AppResponse != nil:
+		return m.AppResponse, nil
+	case m.AppError != nil:
+		return m.AppError, nil
+	case m.AppGossip != nil:
+		return m.AppGossip, nil
+	case m.Simplex != nil:
+		return m.Simplex, nil
 	default:
-		return nil, fmt.Errorf("%w: %T", errUnknownMessageType, msg)
+		return nil, errUnknownMessageType
 	}
 }
 
 // ToConsensusOp maps message.Op to consensus router Op values
-// Returns the consensus Op value and whether the mapping exists
 func ToConsensusOp(op Op) (byte, bool) {
 	switch op {
 	case GetAcceptedFrontierOp:
-		return 0, true // GetAcceptedFrontier
+		return 0, true
 	case AcceptedFrontierOp:
-		return 1, true // AcceptedFrontier
+		return 1, true
 	case GetAcceptedOp:
-		return 2, true // GetAccepted
+		return 2, true
 	case AcceptedOp:
-		return 3, true // Accepted
+		return 3, true
 	case GetOp:
-		return 4, true // Get
+		return 4, true
 	case PutOp:
-		return 5, true // Put
+		return 5, true
 	case PushQueryOp:
-		return 6, true // PushQuery
+		return 6, true
 	case PullQueryOp:
-		return 7, true // PullQuery
+		return 7, true
 	case QbitOp:
-		return 8, true // Qbit
+		return 8, true
 	case GetAncestorsOp:
-		return 9, true // GetContext (wire protocol still uses GetAncestors)
+		return 9, true
 	case AncestorsOp:
-		return 10, true // Context (wire protocol still uses Ancestors)
+		return 10, true
 	default:
 		return 0, false
 	}
@@ -296,9 +288,8 @@ func GetContainerBytes(msg fmt.Stringer) []byte {
 		return m.AppBytes
 	case *p2p.AppResponse:
 		return m.AppBytes
-	// Request messages with container IDs for P-Chain sync
 	case *p2p.GetAccepted:
-		containerIDs := m.GetContainerIds()
+		containerIDs := m.ContainerIds
 		if len(containerIDs) == 0 {
 			return nil
 		}
@@ -308,18 +299,17 @@ func GetContainerBytes(msg fmt.Stringer) []byte {
 		}
 		return result
 	case *p2p.Get:
-		return m.GetContainerId()
+		return m.ContainerId
 	case *p2p.GetAncestors:
-		return m.GetContainerId()
+		return m.ContainerId
 	case *p2p.PullQuery:
-		return m.GetContainerId()
+		return m.ContainerId
 	case *p2p.Chits:
-		// For Qbit messages (formerly Chits), return the PreferredId (the block being voted for)
-		return m.GetPreferredId()
+		return m.PreferredId
 	case *p2p.AcceptedFrontier:
-		return m.GetContainerId()
+		return m.ContainerId
 	case *p2p.Accepted:
-		containerIDs := m.GetContainerIds()
+		containerIDs := m.ContainerIds
 		if len(containerIDs) == 0 {
 			return nil
 		}
@@ -334,58 +324,58 @@ func GetContainerBytes(msg fmt.Stringer) []byte {
 }
 
 func ToOp(m *p2p.Message) (Op, error) {
-	switch msg := m.GetMessage().(type) {
-	case *p2p.Message_Ping:
+	switch {
+	case m.Ping != nil:
 		return PingOp, nil
-	case *p2p.Message_Pong:
+	case m.Pong != nil:
 		return PongOp, nil
-	case *p2p.Message_Handshake:
+	case m.Handshake != nil:
 		return HandshakeOp, nil
-	case *p2p.Message_GetPeerList:
+	case m.GetPeerList != nil:
 		return GetPeerListOp, nil
-	case *p2p.Message_PeerList_:
+	case m.PeerList != nil:
 		return PeerListOp, nil
-	case *p2p.Message_GetStateSummaryFrontier:
+	case m.GetStateSummaryFrontier != nil:
 		return GetStateSummaryFrontierOp, nil
-	case *p2p.Message_StateSummaryFrontier_:
+	case m.StateSummaryFrontier != nil:
 		return StateSummaryFrontierOp, nil
-	case *p2p.Message_GetAcceptedStateSummary:
+	case m.GetAcceptedStateSummary != nil:
 		return GetAcceptedStateSummaryOp, nil
-	case *p2p.Message_AcceptedStateSummary_:
+	case m.AcceptedStateSummary != nil:
 		return AcceptedStateSummaryOp, nil
-	case *p2p.Message_GetAcceptedFrontier:
+	case m.GetAcceptedFrontier != nil:
 		return GetAcceptedFrontierOp, nil
-	case *p2p.Message_AcceptedFrontier_:
+	case m.AcceptedFrontier != nil:
 		return AcceptedFrontierOp, nil
-	case *p2p.Message_GetAccepted:
+	case m.GetAccepted != nil:
 		return GetAcceptedOp, nil
-	case *p2p.Message_Accepted_:
+	case m.Accepted != nil:
 		return AcceptedOp, nil
-	case *p2p.Message_GetAncestors:
+	case m.GetAncestors != nil:
 		return GetAncestorsOp, nil
-	case *p2p.Message_Ancestors_:
+	case m.Ancestors != nil:
 		return AncestorsOp, nil
-	case *p2p.Message_Get:
+	case m.Get != nil:
 		return GetOp, nil
-	case *p2p.Message_Put:
+	case m.Put != nil:
 		return PutOp, nil
-	case *p2p.Message_PushQuery:
+	case m.PushQuery != nil:
 		return PushQueryOp, nil
-	case *p2p.Message_PullQuery:
+	case m.PullQuery != nil:
 		return PullQueryOp, nil
-	case *p2p.Message_Chits:
+	case m.Chits != nil:
 		return QbitOp, nil
-	case *p2p.Message_AppRequest:
+	case m.AppRequest != nil:
 		return AppRequestOp, nil
-	case *p2p.Message_AppResponse:
+	case m.AppResponse != nil:
 		return AppResponseOp, nil
-	case *p2p.Message_AppError:
+	case m.AppError != nil:
 		return AppErrorOp, nil
-	case *p2p.Message_AppGossip:
+	case m.AppGossip != nil:
 		return AppGossipOp, nil
-	case *p2p.Message_Simplex:
+	case m.Simplex != nil:
 		return SimplexOp, nil
 	default:
-		return 0, fmt.Errorf("%w: %T", errUnknownMessageType, msg)
+		return 0, errUnknownMessageType
 	}
 }
