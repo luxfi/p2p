@@ -343,6 +343,20 @@ type BloomFilter struct {
 	Salt   []byte
 }
 
+func (m *BloomFilter) GetFilter() []byte {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *BloomFilter) GetSalt() []byte {
+	if m != nil {
+		return m.Salt
+	}
+	return nil
+}
+
 func (m *BloomFilter) String() string {
 	return fmt.Sprintf("BloomFilter{FilterLen: %d}", len(m.Filter))
 }
