@@ -283,7 +283,14 @@ type Handshake struct {
 	ObjectedLps   []uint32
 	KnownPeers    *BloomFilter
 	IpBlsSig      []byte
-	AllSubnets    bool
+	AllNets       bool
+}
+
+func (m *Handshake) GetAllNets() bool {
+	if m != nil {
+		return m.AllNets
+	}
+	return false
 }
 
 func (m *Handshake) String() string {
@@ -296,6 +303,34 @@ type Client struct {
 	Major uint32
 	Minor uint32
 	Patch uint32
+}
+
+func (m *Client) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Client) GetMajor() uint32 {
+	if m != nil {
+		return m.Major
+	}
+	return 0
+}
+
+func (m *Client) GetMinor() uint32 {
+	if m != nil {
+		return m.Minor
+	}
+	return 0
+}
+
+func (m *Client) GetPatch() uint32 {
+	if m != nil {
+		return m.Patch
+	}
+	return 0
 }
 
 func (m *Client) String() string {
@@ -329,11 +364,25 @@ func (m *ClaimedIpPort) String() string {
 // GetPeerList contains a bloom filter of currently known validator IPs.
 type GetPeerList struct {
 	KnownPeers *BloomFilter
-	AllSubnets bool
+	AllNets    bool
+}
+
+func (m *GetPeerList) GetKnownPeers() *BloomFilter {
+	if m != nil {
+		return m.KnownPeers
+	}
+	return nil
+}
+
+func (m *GetPeerList) GetAllNets() bool {
+	if m != nil {
+		return m.AllNets
+	}
+	return false
 }
 
 func (m *GetPeerList) String() string {
-	return fmt.Sprintf("GetPeerList{AllSubnets: %v}", m.AllSubnets)
+	return fmt.Sprintf("GetPeerList{AllNets: %v}", m.AllNets)
 }
 
 // PeerList contains network-level metadata for a set of validators.
