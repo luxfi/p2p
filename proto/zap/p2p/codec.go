@@ -462,7 +462,7 @@ func marshalHandshake(b *Buffer, m *Handshake) {
 		b.WriteUint8(0)
 	}
 	b.WriteBytes(m.IpBlsSig)
-	b.WriteBool(m.AllSubnets)
+	b.WriteBool(m.AllNets)
 }
 
 func marshalGetPeerList(b *Buffer, m *GetPeerList) {
@@ -473,7 +473,7 @@ func marshalGetPeerList(b *Buffer, m *GetPeerList) {
 	} else {
 		b.WriteUint8(0)
 	}
-	b.WriteBool(m.AllSubnets)
+	b.WriteBool(m.AllNets)
 }
 
 func marshalPeerList(b *Buffer, m *PeerList) {
@@ -866,7 +866,7 @@ func unmarshalHandshake(r *Reader) (*Handshake, error) {
 	if err != nil {
 		return nil, err
 	}
-	m.AllSubnets, err = r.ReadBool()
+	m.AllNets, err = r.ReadBool()
 	return m, err
 }
 
@@ -887,7 +887,7 @@ func unmarshalGetPeerList(r *Reader) (*GetPeerList, error) {
 			return nil, err
 		}
 	}
-	m.AllSubnets, err = r.ReadBool()
+	m.AllNets, err = r.ReadBool()
 	return m, err
 }
 
