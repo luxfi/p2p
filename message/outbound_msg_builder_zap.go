@@ -1,4 +1,4 @@
-//go:build grpc
+//go:build !grpc
 
 // Copyright (C) 2019-2025, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/p2p/proto/pb/p2p"
 	"github.com/luxfi/node/utils/compression"
 	"github.com/luxfi/node/utils/ips"
+	"github.com/luxfi/p2p/proto/pb/p2p"
 )
 
 var _ OutboundMsgBuilder = (*outMsgBuilder)(nil)
@@ -209,10 +209,8 @@ func (b *outMsgBuilder) Ping(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_Ping{
-				Ping: &p2p.Ping{
-					Uptime: primaryUptime,
-				},
+			Ping: &p2p.Ping{
+				Uptime: primaryUptime,
 			},
 		},
 		compression.TypeNone,
@@ -223,9 +221,7 @@ func (b *outMsgBuilder) Ping(
 func (b *outMsgBuilder) Pong() (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_Pong{
-				Pong: &p2p.Pong{},
-			},
+			Pong: &p2p.Pong{},
 		},
 		compression.TypeNone,
 		false,
@@ -254,30 +250,28 @@ func (b *outMsgBuilder) Handshake(
 	encodeIDs(trackedNets, subsubsubnetIDBytes)
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_Handshake{
-				Handshake: &p2p.Handshake{
-					NetworkId:     networkID,
-					MyTime:        myTime,
-					IpAddr:        ip.Addr().AsSlice(),
-					IpPort:        uint32(ip.Port()),
-					IpSigningTime: ipSigningTime,
-					IpNodeIdSig:   ipNodeIDSig,
-					TrackedNets:   subsubsubnetIDBytes,
-					Client: &p2p.Client{
-						Name:  client,
-						Major: major,
-						Minor: minor,
-						Patch: patch,
-					},
-					SupportedLps: supportedLPs,
-					ObjectedLps:  objectedLPs,
-					KnownPeers: &p2p.BloomFilter{
-						Filter: knownPeersFilter,
-						Salt:   knownPeersSalt,
-					},
-					IpBlsSig: ipBLSSig,
-					AllNets:  requestAllNetIPs,
+			Handshake: &p2p.Handshake{
+				NetworkId:     networkID,
+				MyTime:        myTime,
+				IpAddr:        ip.Addr().AsSlice(),
+				IpPort:        uint32(ip.Port()),
+				IpSigningTime: ipSigningTime,
+				IpNodeIdSig:   ipNodeIDSig,
+				TrackedNets:   subsubsubnetIDBytes,
+				Client: &p2p.Client{
+					Name:  client,
+					Major: major,
+					Minor: minor,
+					Patch: patch,
 				},
+				SupportedLps: supportedLPs,
+				ObjectedLps:  objectedLPs,
+				KnownPeers: &p2p.BloomFilter{
+					Filter: knownPeersFilter,
+					Salt:   knownPeersSalt,
+				},
+				IpBlsSig:   ipBLSSig,
+				AllSubnets: requestAllNetIPs,
 			},
 		},
 		compression.TypeNone,
@@ -292,14 +286,12 @@ func (b *outMsgBuilder) GetPeerList(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_GetPeerList{
-				GetPeerList: &p2p.GetPeerList{
-					KnownPeers: &p2p.BloomFilter{
-						Filter: knownPeersFilter,
-						Salt:   knownPeersSalt,
-					},
-					AllNets: requestAllNetIPs,
+			GetPeerList: &p2p.GetPeerList{
+				KnownPeers: &p2p.BloomFilter{
+					Filter: knownPeersFilter,
+					Salt:   knownPeersSalt,
 				},
+				AllSubnets: requestAllNetIPs,
 			},
 		},
 		b.compressionType,
@@ -321,10 +313,8 @@ func (b *outMsgBuilder) PeerList(peers []*ips.ClaimedIPPort, bypassThrottling bo
 	}
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_PeerList_{
-				PeerList_: &p2p.PeerList{
-					ClaimedIpPorts: claimIPPorts,
-				},
+			PeerList: &p2p.PeerList{
+				ClaimedIpPorts: claimIPPorts,
 			},
 		},
 		b.compressionType,
@@ -339,12 +329,10 @@ func (b *outMsgBuilder) GetStateSummaryFrontier(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_GetStateSummaryFrontier{
-				GetStateSummaryFrontier: &p2p.GetStateSummaryFrontier{
-					ChainId:   chainID[:],
-					RequestId: requestID,
-					Deadline:  uint64(deadline),
-				},
+			GetStateSummaryFrontier: &p2p.GetStateSummaryFrontier{
+				ChainId:   chainID[:],
+				RequestId: requestID,
+				Deadline:  uint64(deadline),
 			},
 		},
 		compression.TypeNone,
@@ -359,12 +347,10 @@ func (b *outMsgBuilder) StateSummaryFrontier(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_StateSummaryFrontier_{
-				StateSummaryFrontier_: &p2p.StateSummaryFrontier{
-					ChainId:   chainID[:],
-					RequestId: requestID,
-					Summary:   summary,
-				},
+			StateSummaryFrontier: &p2p.StateSummaryFrontier{
+				ChainId:   chainID[:],
+				RequestId: requestID,
+				Summary:   summary,
 			},
 		},
 		b.compressionType,
@@ -380,13 +366,11 @@ func (b *outMsgBuilder) GetAcceptedStateSummary(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_GetAcceptedStateSummary{
-				GetAcceptedStateSummary: &p2p.GetAcceptedStateSummary{
-					ChainId:   chainID[:],
-					RequestId: requestID,
-					Deadline:  uint64(deadline),
-					Heights:   heights,
-				},
+			GetAcceptedStateSummary: &p2p.GetAcceptedStateSummary{
+				ChainId:   chainID[:],
+				RequestId: requestID,
+				Deadline:  uint64(deadline),
+				Heights:   heights,
 			},
 		},
 		b.compressionType,
@@ -403,12 +387,10 @@ func (b *outMsgBuilder) AcceptedStateSummary(
 	encodeIDs(summaryIDs, summaryIDBytes)
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_AcceptedStateSummary_{
-				AcceptedStateSummary_: &p2p.AcceptedStateSummary{
-					ChainId:    chainID[:],
-					RequestId:  requestID,
-					SummaryIds: summaryIDBytes,
-				},
+			AcceptedStateSummary: &p2p.AcceptedStateSummary{
+				ChainId:    chainID[:],
+				RequestId:  requestID,
+				SummaryIds: summaryIDBytes,
 			},
 		},
 		b.compressionType,
@@ -423,12 +405,10 @@ func (b *outMsgBuilder) GetAcceptedFrontier(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_GetAcceptedFrontier{
-				GetAcceptedFrontier: &p2p.GetAcceptedFrontier{
-					ChainId:   chainID[:],
-					RequestId: requestID,
-					Deadline:  uint64(deadline),
-				},
+			GetAcceptedFrontier: &p2p.GetAcceptedFrontier{
+				ChainId:   chainID[:],
+				RequestId: requestID,
+				Deadline:  uint64(deadline),
 			},
 		},
 		compression.TypeNone,
@@ -443,12 +423,10 @@ func (b *outMsgBuilder) AcceptedFrontier(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_AcceptedFrontier_{
-				AcceptedFrontier_: &p2p.AcceptedFrontier{
-					ChainId:     chainID[:],
-					RequestId:   requestID,
-					ContainerId: containerID[:],
-				},
+			AcceptedFrontier: &p2p.AcceptedFrontier{
+				ChainId:     chainID[:],
+				RequestId:   requestID,
+				ContainerId: containerID[:],
 			},
 		},
 		compression.TypeNone,
@@ -466,13 +444,11 @@ func (b *outMsgBuilder) GetAccepted(
 	encodeIDs(containerIDs, containerIDBytes)
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_GetAccepted{
-				GetAccepted: &p2p.GetAccepted{
-					ChainId:      chainID[:],
-					RequestId:    requestID,
-					Deadline:     uint64(deadline),
-					ContainerIds: containerIDBytes,
-				},
+			GetAccepted: &p2p.GetAccepted{
+				ChainId:      chainID[:],
+				RequestId:    requestID,
+				Deadline:     uint64(deadline),
+				ContainerIds: containerIDBytes,
 			},
 		},
 		compression.TypeNone,
@@ -489,12 +465,10 @@ func (b *outMsgBuilder) Accepted(
 	encodeIDs(containerIDs, containerIDBytes)
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_Accepted_{
-				Accepted_: &p2p.Accepted{
-					ChainId:      chainID[:],
-					RequestId:    requestID,
-					ContainerIds: containerIDBytes,
-				},
+			Accepted: &p2p.Accepted{
+				ChainId:      chainID[:],
+				RequestId:    requestID,
+				ContainerIds: containerIDBytes,
 			},
 		},
 		compression.TypeNone,
@@ -511,14 +485,12 @@ func (b *outMsgBuilder) GetAncestors(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_GetAncestors{
-				GetAncestors: &p2p.GetAncestors{
-					ChainId:     chainID[:],
-					RequestId:   requestID,
-					Deadline:    uint64(deadline),
-					ContainerId: containerID[:],
-					EngineType:  engineType,
-				},
+			GetAncestors: &p2p.GetAncestors{
+				ChainId:     chainID[:],
+				RequestId:   requestID,
+				Deadline:    uint64(deadline),
+				ContainerId: containerID[:],
+				EngineType:  engineType,
 			},
 		},
 		compression.TypeNone,
@@ -533,12 +505,10 @@ func (b *outMsgBuilder) Ancestors(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_Ancestors_{
-				Ancestors_: &p2p.Ancestors{
-					ChainId:    chainID[:],
-					RequestId:  requestID,
-					Containers: containers,
-				},
+			Ancestors: &p2p.Ancestors{
+				ChainId:    chainID[:],
+				RequestId:  requestID,
+				Containers: containers,
 			},
 		},
 		b.compressionType,
@@ -554,13 +524,11 @@ func (b *outMsgBuilder) Get(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_Get{
-				Get: &p2p.Get{
-					ChainId:     chainID[:],
-					RequestId:   requestID,
-					Deadline:    uint64(deadline),
-					ContainerId: containerID[:],
-				},
+			Get: &p2p.Get{
+				ChainId:     chainID[:],
+				RequestId:   requestID,
+				Deadline:    uint64(deadline),
+				ContainerId: containerID[:],
 			},
 		},
 		compression.TypeNone,
@@ -575,12 +543,10 @@ func (b *outMsgBuilder) Put(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_Put{
-				Put: &p2p.Put{
-					ChainId:   chainID[:],
-					RequestId: requestID,
-					Container: container,
-				},
+			Put: &p2p.Put{
+				ChainId:   chainID[:],
+				RequestId: requestID,
+				Container: container,
 			},
 		},
 		b.compressionType,
@@ -597,14 +563,12 @@ func (b *outMsgBuilder) PushQuery(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_PushQuery{
-				PushQuery: &p2p.PushQuery{
-					ChainId:         chainID[:],
-					RequestId:       requestID,
-					Deadline:        uint64(deadline),
-					Container:       container,
-					RequestedHeight: requestedHeight,
-				},
+			PushQuery: &p2p.PushQuery{
+				ChainId:         chainID[:],
+				RequestId:       requestID,
+				Deadline:        uint64(deadline),
+				Container:       container,
+				RequestedHeight: requestedHeight,
 			},
 		},
 		b.compressionType,
@@ -621,14 +585,12 @@ func (b *outMsgBuilder) PullQuery(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_PullQuery{
-				PullQuery: &p2p.PullQuery{
-					ChainId:         chainID[:],
-					RequestId:       requestID,
-					Deadline:        uint64(deadline),
-					ContainerId:     containerID[:],
-					RequestedHeight: requestedHeight,
-				},
+			PullQuery: &p2p.PullQuery{
+				ChainId:         chainID[:],
+				RequestId:       requestID,
+				Deadline:        uint64(deadline),
+				ContainerId:     containerID[:],
+				RequestedHeight: requestedHeight,
 			},
 		},
 		compression.TypeNone,
@@ -646,15 +608,13 @@ func (b *outMsgBuilder) Chits(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_Chits{
-				Chits: &p2p.Chits{
-					ChainId:             chainID[:],
-					RequestId:           requestID,
-					PreferredId:         preferredID[:],
-					PreferredIdAtHeight: preferredIDAtHeight[:],
-					AcceptedId:          acceptedID[:],
-					AcceptedHeight:      acceptedHeight,
-				},
+			Chits: &p2p.Chits{
+				ChainId:             chainID[:],
+				RequestId:           requestID,
+				PreferredId:         preferredID[:],
+				PreferredIdAtHeight: preferredIDAtHeight[:],
+				AcceptedId:          acceptedID[:],
+				AcceptedHeight:      acceptedHeight,
 			},
 		},
 		compression.TypeNone,
@@ -670,13 +630,11 @@ func (b *outMsgBuilder) AppRequest(
 ) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_AppRequest{
-				AppRequest: &p2p.AppRequest{
-					ChainId:   chainID[:],
-					RequestId: requestID,
-					Deadline:  uint64(deadline),
-					AppBytes:  msg,
-				},
+			AppRequest: &p2p.AppRequest{
+				ChainId:   chainID[:],
+				RequestId: requestID,
+				Deadline:  uint64(deadline),
+				AppBytes:  msg,
 			},
 		},
 		b.compressionType,
@@ -687,12 +645,10 @@ func (b *outMsgBuilder) AppRequest(
 func (b *outMsgBuilder) AppResponse(chainID ids.ID, requestID uint32, msg []byte) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_AppResponse{
-				AppResponse: &p2p.AppResponse{
-					ChainId:   chainID[:],
-					RequestId: requestID,
-					AppBytes:  msg,
-				},
+			AppResponse: &p2p.AppResponse{
+				ChainId:   chainID[:],
+				RequestId: requestID,
+				AppBytes:  msg,
 			},
 		},
 		b.compressionType,
@@ -703,13 +659,11 @@ func (b *outMsgBuilder) AppResponse(chainID ids.ID, requestID uint32, msg []byte
 func (b *outMsgBuilder) AppError(chainID ids.ID, requestID uint32, errorCode int32, errorMessage string) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_AppError{
-				AppError: &p2p.AppError{
-					ChainId:      chainID[:],
-					RequestId:    requestID,
-					ErrorCode:    errorCode,
-					ErrorMessage: errorMessage,
-				},
+			AppError: &p2p.AppError{
+				ChainId:      chainID[:],
+				RequestId:    requestID,
+				ErrorCode:    errorCode,
+				ErrorMessage: errorMessage,
 			},
 		},
 		b.compressionType,
@@ -720,11 +674,9 @@ func (b *outMsgBuilder) AppError(chainID ids.ID, requestID uint32, errorCode int
 func (b *outMsgBuilder) AppGossip(chainID ids.ID, msg []byte) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_AppGossip{
-				AppGossip: &p2p.AppGossip{
-					ChainId:  chainID[:],
-					AppBytes: msg,
-				},
+			AppGossip: &p2p.AppGossip{
+				ChainId:  chainID[:],
+				AppBytes: msg,
 			},
 		},
 		b.compressionType,
@@ -735,9 +687,7 @@ func (b *outMsgBuilder) AppGossip(chainID ids.ID, msg []byte) (OutboundMessage, 
 func (b *outMsgBuilder) SimplexMessage(msg *p2p.Simplex) (OutboundMessage, error) {
 	return b.builder.createOutbound(
 		&p2p.Message{
-			Message: &p2p.Message_Simplex{
-				Simplex: msg,
-			},
+			Simplex: msg,
 		},
 		b.compressionType,
 		false,

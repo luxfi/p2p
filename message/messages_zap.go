@@ -1,4 +1,4 @@
-//go:build grpc
+//go:build !grpc
 
 // Copyright (C) 2019-2025, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
@@ -16,7 +16,6 @@ import (
 	"github.com/luxfi/p2p/proto/pb/p2p"
 	"github.com/luxfi/node/utils/compression"
 	"github.com/luxfi/node/utils/timer/mockable"
-	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -178,7 +177,7 @@ func (mb *msgBuilder) marshal(
 	uncompressedMsg *p2p.Message,
 	compressionType compression.Type,
 ) ([]byte, int, Op, error) {
-	uncompressedMsgBytes, err := proto.Marshal(uncompressedMsg)
+	uncompressedMsgBytes, err := p2p.Marshal(uncompressedMsg)
 	if err != nil {
 		return nil, 0, 0, err
 	}
@@ -194,10 +193,7 @@ func (mb *msgBuilder) marshal(
 	//
 	// This recursive packing allows us to avoid an extra compression on/off
 	// field in the message.
-	var (
-		startTime     = time.Now()
-		compressedMsg p2p.Message
-	)
+	var startTime = time.Now()
 	switch compressionType {
 	case compression.TypeNone:
 		return uncompressedMsgBytes, 0, op, nil
@@ -206,36 +202,33 @@ func (mb *msgBuilder) marshal(
 		if err != nil {
 			return nil, 0, 0, err
 		}
-		compressedMsg = p2p.Message{
-			Message: &p2p.Message_CompressedZstd{
-				CompressedZstd: compressedBytes,
-			},
+		compressedMsg := &p2p.Message{
+			CompressedZstd: compressedBytes,
 		}
+		compressedMsgBytes, err := p2p.Marshal(compressedMsg)
+		if err != nil {
+			return nil, 0, 0, err
+		}
+		compressTook := time.Since(startTime)
+
+		labels := metric.Labels{
+			typeLabel:      compressionType.String(),
+			opLabel:        op.String(),
+			directionLabel: compressionLabel,
+		}
+		mb.count.With(labels).Inc()
+		mb.duration.With(labels).Add(float64(compressTook))
+
+		bytesSaved := len(uncompressedMsgBytes) - len(compressedMsgBytes)
+		return compressedMsgBytes, bytesSaved, op, nil
 	default:
 		return nil, 0, 0, errUnknownCompressionType
 	}
-
-	compressedMsgBytes, err := proto.Marshal(&compressedMsg)
-	if err != nil {
-		return nil, 0, 0, err
-	}
-	compressTook := time.Since(startTime)
-
-	labels := metric.Labels{
-		typeLabel:      compressionType.String(),
-		opLabel:        op.String(),
-		directionLabel: compressionLabel,
-	}
-	mb.count.With(labels).Inc()
-	mb.duration.With(labels).Add(float64(compressTook))
-
-	bytesSaved := len(uncompressedMsgBytes) - len(compressedMsgBytes)
-	return compressedMsgBytes, bytesSaved, op, nil
 }
 
 func (mb *msgBuilder) unmarshal(b []byte) (*p2p.Message, int, Op, error) {
 	m := new(p2p.Message)
-	if err := proto.Unmarshal(b, m); err != nil {
+	if err := p2p.Unmarshal(b, m); err != nil {
 		return nil, 0, 0, err
 	}
 
@@ -263,7 +256,7 @@ func (mb *msgBuilder) unmarshal(b []byte) (*p2p.Message, int, Op, error) {
 	}
 	bytesSavedCompression := len(decompressed) - len(compressedBytes)
 
-	if err := proto.Unmarshal(decompressed, m); err != nil {
+	if err := p2p.Unmarshal(decompressed, m); err != nil {
 		return nil, 0, 0, err
 	}
 	decompressTook := time.Since(startTime)
