@@ -38,10 +38,13 @@ func (o clientOptionFunc) apply(options *clientOptions) {
 	o(options)
 }
 
-// WithValidatorSampling configures Client.RequestAny to sample validators
+// WithValidatorSampling configures Client.RequestAny to sample validators.
+// If validators is nil, the default PeerSampler is kept.
 func WithValidatorSampling(validators *Validators) ClientOption {
 	return clientOptionFunc(func(options *clientOptions) {
-		options.nodeSampler = validators
+		if validators != nil {
+			options.nodeSampler = validators
+		}
 	})
 }
 
