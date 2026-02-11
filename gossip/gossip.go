@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"sync"
 	"time"
 
@@ -134,11 +135,22 @@ func (m *Metrics) observeMessage(labels map[string]string, count int, bytes int)
 }
 
 func (v ValidatorGossiper) Gossip(ctx context.Context) error {
-	if v.Validators == nil || !v.Validators.Has(ctx, v.NodeID) {
+	if isNilInterface(v.Validators) || !v.Validators.Has(ctx, v.NodeID) {
 		return nil
 	}
 
 	return v.Gossiper.Gossip(ctx)
+}
+
+// isNilInterface returns true if the interface is nil or contains a nil pointer.
+// This handles the Go nil-interface trap where a typed nil assigned to an
+// interface makes the interface non-nil even though the underlying value is nil.
+func isNilInterface(i any) bool {
+	if i == nil {
+		return true
+	}
+	v := reflect.ValueOf(i)
+	return v.Kind() == reflect.Ptr && v.IsNil()
 }
 
 func NewPullGossiper[T Gossipable](
@@ -629,7 +641,7 @@ func (p *PushGossiper[T]) gossip(
 	topValidatorsMetric := p.metrics.topValidators.With(metricsLabels)
 
 	var validatorsByStake []ids.NodeID
-	if p.validators != nil {
+	if !isNilInterface(p.validators) {
 		validatorsByStake = p.validators.Top(ctx, gossipParams.StakePercentage)
 	}
 	topValidatorsMetric.Set(float64(len(validatorsByStake)))
