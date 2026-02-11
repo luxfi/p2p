@@ -134,7 +134,7 @@ func (m *Metrics) observeMessage(labels map[string]string, count int, bytes int)
 }
 
 func (v ValidatorGossiper) Gossip(ctx context.Context) error {
-	if !v.Validators.Has(ctx, v.NodeID) {
+	if v.Validators == nil || !v.Validators.Has(ctx, v.NodeID) {
 		return nil
 	}
 
@@ -628,7 +628,10 @@ func (p *PushGossiper[T]) gossip(
 
 	topValidatorsMetric := p.metrics.topValidators.With(metricsLabels)
 
-	validatorsByStake := p.validators.Top(ctx, gossipParams.StakePercentage)
+	var validatorsByStake []ids.NodeID
+	if p.validators != nil {
+		validatorsByStake = p.validators.Top(ctx, gossipParams.StakePercentage)
+	}
 	topValidatorsMetric.Set(float64(len(validatorsByStake)))
 
 	// Convert []ids.NodeID to set for SendConfig
