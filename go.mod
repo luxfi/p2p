@@ -1,6 +1,6 @@
 module github.com/luxfi/p2p
 
-go 1.25.5
+go 1.26
 
 require (
 	github.com/golang/mock v1.7.0-rc.1
