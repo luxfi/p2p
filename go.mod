@@ -7,9 +7,9 @@ require (
 	github.com/luxfi/codec v1.1.2
 	github.com/luxfi/consensus v1.22.51
 	github.com/luxfi/constants v1.4.2
-	github.com/luxfi/crypto v1.17.37
-	github.com/luxfi/ids v1.2.8
-	github.com/luxfi/log v1.2.1
+	github.com/luxfi/crypto v1.19.0
+	github.com/luxfi/ids v1.2.9
+	github.com/luxfi/log v1.4.1
 	github.com/luxfi/math v1.4.0
 	github.com/luxfi/metric v1.4.9
 	github.com/luxfi/mock v0.1.0
@@ -35,6 +35,7 @@ require (
 	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/holiman/uint256 v1.3.2 // indirect
 	github.com/klauspost/compress v1.18.4 // indirect
+	github.com/luxfi/accel v1.0.7 // indirect
 	github.com/luxfi/cache v1.1.0 // indirect
 	github.com/luxfi/const v1.4.0 // indirect
 	github.com/luxfi/geth v1.16.67 // indirect
