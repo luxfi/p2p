@@ -1,6 +1,6 @@
 module github.com/luxfi/p2p
 
-go 1.26.1
+go 1.26.3
 
 require (
 	github.com/golang/mock v1.7.0-rc.1
@@ -10,7 +10,7 @@ require (
 	github.com/luxfi/crypto v1.17.37
 	github.com/luxfi/ids v1.2.8
 	github.com/luxfi/log v1.2.1
-	github.com/luxfi/math v1.2.2
+	github.com/luxfi/math v1.4.0
 	github.com/luxfi/metric v1.4.9
 	github.com/luxfi/mock v0.1.0
 	github.com/luxfi/node v1.22.81
@@ -22,7 +22,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/mock v0.6.0
 	go.uber.org/zap v1.27.1
-	golang.org/x/sync v0.19.0
+	golang.org/x/sync v0.20.0
 	golang.org/x/time v0.14.0
 	google.golang.org/protobuf v1.36.11
 )
@@ -45,9 +45,9 @@ require (
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/supranational/blst v0.3.16 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.48.0 // indirect
-	golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a // indirect
-	gonum.org/v1/gonum v0.16.0 // indirect
+	golang.org/x/crypto v0.49.0 // indirect
+	golang.org/x/exp v0.0.0-20260312153236-7ab1446f8b90 // indirect
+	gonum.org/v1/gonum v0.17.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 )
 
@@ -62,7 +62,7 @@ require (
 	github.com/prometheus/common v0.67.5 // indirect
 	github.com/prometheus/procfs v0.19.2 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
-	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
