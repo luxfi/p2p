@@ -18,10 +18,10 @@ import (
 
 	"github.com/luxfi/ids"
 	"github.com/luxfi/math/meter"
-	"github.com/luxfi/p2p/tracker"
-	"github.com/luxfi/p2p/tracker/trackermock"
 	"github.com/luxfi/node/utils/resource"
 	"github.com/luxfi/node/utils/timer/mockable"
+	"github.com/luxfi/p2p/tracker"
+	"github.com/luxfi/p2p/tracker/trackermock"
 	"github.com/stretchr/testify/require"
 )
 

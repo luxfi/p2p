@@ -18,13 +18,13 @@ import (
 	"github.com/luxfi/crypto/bls/signer/localsigner"
 	"github.com/luxfi/ids"
 	"github.com/luxfi/math/set"
+	"github.com/luxfi/node/utils/compression"
 	"github.com/luxfi/p2p/message"
 	"github.com/luxfi/p2p/throttling"
 	"github.com/luxfi/p2p/tracker"
-	"github.com/luxfi/utils"
-	"github.com/luxfi/node/utils/compression"
 	luxtls "github.com/luxfi/tls"
 	"github.com/luxfi/upgrade"
+	"github.com/luxfi/utils"
 	"github.com/luxfi/version"
 )
 

@@ -13,8 +13,8 @@ import (
 	"github.com/luxfi/metric"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/p2p/tracker"
 	"github.com/luxfi/node/utils/timer/mockable"
+	"github.com/luxfi/p2p/tracker"
 
 	timerpkg "github.com/luxfi/node/utils/timer"
 )

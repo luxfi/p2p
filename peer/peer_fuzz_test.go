@@ -14,12 +14,12 @@ import (
 	"github.com/luxfi/ids"
 	"github.com/luxfi/log"
 	"github.com/luxfi/math/set"
-	"github.com/luxfi/p2p/message"
-	"github.com/luxfi/p2p/throttling"
-	"github.com/luxfi/utils"
 	"github.com/luxfi/node/utils/compression"
 	"github.com/luxfi/node/utils/ips"
+	"github.com/luxfi/p2p/message"
+	"github.com/luxfi/p2p/throttling"
 	luxtls "github.com/luxfi/tls"
+	"github.com/luxfi/utils"
 	"github.com/luxfi/version"
 )
 

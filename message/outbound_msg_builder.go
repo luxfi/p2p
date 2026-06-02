@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/p2p/proto/pb/p2p"
 	"github.com/luxfi/node/utils/compression"
 	"github.com/luxfi/node/utils/ips"
+	"github.com/luxfi/p2p/proto/pb/p2p"
 )
 
 var _ OutboundMsgBuilder = (*outMsgBuilder)(nil)

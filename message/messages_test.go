@@ -14,8 +14,8 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/p2p/proto/pb/p2p"
 	"github.com/luxfi/node/utils/compression"
+	"github.com/luxfi/p2p/proto/pb/p2p"
 	luxtls "github.com/luxfi/tls"
 )
 
