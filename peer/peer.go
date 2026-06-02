@@ -20,18 +20,18 @@ import (
 
 	"github.com/luxfi/log"
 
+	"github.com/luxfi/codec/jsonrpc"
 	"github.com/luxfi/constants"
 	"github.com/luxfi/crypto/bls"
 	"github.com/luxfi/ids"
 	"github.com/luxfi/math/set"
-	"github.com/luxfi/p2p/message"
-	"github.com/luxfi/p2p/proto/pb/p2p"
-	"github.com/luxfi/utils"
 	"github.com/luxfi/node/utils/bloom"
 	"github.com/luxfi/node/utils/ips"
-	"github.com/luxfi/codec/jsonrpc"
 	"github.com/luxfi/node/utils/wrappers"
+	"github.com/luxfi/p2p/message"
+	"github.com/luxfi/p2p/proto/pb/p2p"
 	luxtls "github.com/luxfi/tls"
+	"github.com/luxfi/utils"
 	"github.com/luxfi/version"
 )
 

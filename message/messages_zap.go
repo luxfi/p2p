@@ -13,9 +13,9 @@ import (
 	"github.com/luxfi/constants"
 	"github.com/luxfi/ids"
 	"github.com/luxfi/metric"
-	"github.com/luxfi/p2p/proto/pb/p2p"
 	"github.com/luxfi/node/utils/compression"
 	"github.com/luxfi/node/utils/timer/mockable"
+	"github.com/luxfi/p2p/proto/pb/p2p"
 )
 
 const (

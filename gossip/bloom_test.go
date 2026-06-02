@@ -103,9 +103,9 @@ func TestResetBloomFilterIfNeeded(t *testing.T) {
 	bf, err := NewBloomFilter(
 		prometheus.NewRegistry(),
 		"test",
-		1,                   // minTargetElements
-		0.01,                // targetFalsePositiveRate
-		0.0000000000000001,  // very low reset threshold
+		1,                  // minTargetElements
+		0.01,               // targetFalsePositiveRate
+		0.0000000000000001, // very low reset threshold
 	)
 	require.NoError(err)
 
@@ -132,7 +132,7 @@ func TestBloomFilterNoResetNotNeeded(t *testing.T) {
 	bf, err := NewBloomFilter(
 		prometheus.NewRegistry(),
 		"test",
-		1000,  // large capacity
+		1000, // large capacity
 		0.01,
 		0.001,
 	)

@@ -15,8 +15,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/luxfi/crypto/bls/signer/localsigner"
-	"github.com/luxfi/utils"
 	luxtls "github.com/luxfi/tls"
+	"github.com/luxfi/utils"
 )
 
 func TestIPSigner(t *testing.T) {

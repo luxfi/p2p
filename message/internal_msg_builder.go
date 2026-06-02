@@ -8,8 +8,8 @@ import (
 	"fmt"
 
 	"github.com/luxfi/ids"
-	"github.com/luxfi/p2p/proto/pb/p2p"
 	"github.com/luxfi/node/utils/timer/mockable"
+	"github.com/luxfi/p2p/proto/pb/p2p"
 	"github.com/luxfi/version"
 )
 
