@@ -20,7 +20,6 @@ import (
 
 	"github.com/luxfi/log"
 
-	"github.com/luxfi/codec/jsonrpc"
 	"github.com/luxfi/constants"
 	"github.com/luxfi/crypto/bls"
 	"github.com/luxfi/ids"
@@ -291,7 +290,7 @@ func (p *peer) Info() Info {
 		Version:        p.version.String(),
 		LastSent:       p.LastSent(),
 		LastReceived:   p.LastReceived(),
-		ObservedUptime: json.Uint32(primaryUptime),
+		ObservedUptime: Uint32(primaryUptime),
 		TrackedChains:  p.trackedChains,
 		// TODO: Add support for SupportedLPs and ObjectedLPs
 	}
