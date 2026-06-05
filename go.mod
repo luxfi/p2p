@@ -4,7 +4,6 @@ go 1.26.3
 
 require (
 	github.com/golang/mock v1.7.0-rc.1
-	github.com/luxfi/codec v1.1.2
 	github.com/luxfi/consensus v1.22.51
 	github.com/luxfi/constants v1.4.2
 	github.com/luxfi/crypto v1.19.0
@@ -32,7 +31,6 @@ require (
 	github.com/cloudflare/circl v1.6.3 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
 	github.com/google/renameio/v2 v2.0.2 // indirect
-	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/holiman/uint256 v1.3.2 // indirect
 	github.com/klauspost/compress v1.18.4 // indirect
 	github.com/luxfi/accel v1.0.7 // indirect
