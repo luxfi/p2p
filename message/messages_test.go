@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 
 	"github.com/luxfi/ids"
 	"github.com/luxfi/node/utils/compression"
@@ -55,9 +54,7 @@ func TestMessage(t *testing.T) {
 			desc: "ping message with no compression no uptime",
 			op:   PingOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Ping{
-					Ping: &p2p.Ping{},
-				},
+				Ping: &p2p.Ping{},
 			},
 			compressionType:  compression.TypeNone,
 			bypassThrottling: true,
@@ -67,9 +64,7 @@ func TestMessage(t *testing.T) {
 			desc: "pong message with no compression",
 			op:   PongOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Pong{
-					Pong: &p2p.Pong{},
-				},
+				Pong: &p2p.Pong{},
 			},
 			compressionType:  compression.TypeNone,
 			bypassThrottling: true,
@@ -79,10 +74,8 @@ func TestMessage(t *testing.T) {
 			desc: "ping message with no compression and uptime",
 			op:   PingOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Ping{
-					Ping: &p2p.Ping{
-						Uptime: 100,
-					},
+				Ping: &p2p.Ping{
+					Uptime: 100,
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -93,17 +86,15 @@ func TestMessage(t *testing.T) {
 			desc: "Handshake message with no compression",
 			op:   HandshakeOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Handshake{
-					Handshake: &p2p.Handshake{
-						NetworkId:     uint32(1337),
-						MyTime:        uint64(nowUnix),
-						IpAddr:        []byte(net.IPv6zero),
-						IpPort:        9631,
-						IpSigningTime: uint64(nowUnix),
-						IpNodeIdSig:   []byte{'y', 'e', 'e', 't'},
-						TrackedNets:   [][]byte{testID[:]},
-						IpBlsSig:      []byte{'y', 'e', 'e', 't', '2'},
-					},
+				Handshake: &p2p.Handshake{
+					NetworkId:     uint32(1337),
+					MyTime:        uint64(nowUnix),
+					IpAddr:        []byte(net.IPv6zero),
+					IpPort:        9631,
+					IpSigningTime: uint64(nowUnix),
+					IpNodeIdSig:   []byte{'y', 'e', 'e', 't'},
+					TrackedNets:   [][]byte{testID[:]},
+					IpBlsSig:      []byte{'y', 'e', 'e', 't', '2'},
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -114,12 +105,10 @@ func TestMessage(t *testing.T) {
 			desc: "get_peer_list message with no compression",
 			op:   GetPeerListOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_GetPeerList{
-					GetPeerList: &p2p.GetPeerList{
-						KnownPeers: &p2p.BloomFilter{
-							Filter: make([]byte, 2048),
-							Salt:   make([]byte, 32),
-						},
+				GetPeerList: &p2p.GetPeerList{
+					KnownPeers: &p2p.BloomFilter{
+						Filter: make([]byte, 2048),
+						Salt:   make([]byte, 32),
 					},
 				},
 			},
@@ -131,12 +120,10 @@ func TestMessage(t *testing.T) {
 			desc: "get_peer_list message with zstd compression",
 			op:   GetPeerListOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_GetPeerList{
-					GetPeerList: &p2p.GetPeerList{
-						KnownPeers: &p2p.BloomFilter{
-							Filter: make([]byte, 2048),
-							Salt:   make([]byte, 32),
-						},
+				GetPeerList: &p2p.GetPeerList{
+					KnownPeers: &p2p.BloomFilter{
+						Filter: make([]byte, 2048),
+						Salt:   make([]byte, 32),
 					},
 				},
 			},
@@ -148,16 +135,14 @@ func TestMessage(t *testing.T) {
 			desc: "peer_list message with no compression",
 			op:   PeerListOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_PeerList_{
-					PeerList_: &p2p.PeerList{
-						ClaimedIpPorts: []*p2p.ClaimedIpPort{
-							{
-								X509Certificate: testTLSCert.Certificate[0],
-								IpAddr:          []byte(net.IPv4zero),
-								IpPort:          10,
-								Timestamp:       1,
-								Signature:       []byte{0},
-							},
+				PeerList: &p2p.PeerList{
+					ClaimedIpPorts: []*p2p.ClaimedIpPort{
+						{
+							X509Certificate: testTLSCert.Certificate[0],
+							IpAddr:          []byte(net.IPv4zero),
+							IpPort:          10,
+							Timestamp:       1,
+							Signature:       []byte{0},
 						},
 					},
 				},
@@ -170,16 +155,14 @@ func TestMessage(t *testing.T) {
 			desc: "peer_list message with zstd compression",
 			op:   PeerListOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_PeerList_{
-					PeerList_: &p2p.PeerList{
-						ClaimedIpPorts: []*p2p.ClaimedIpPort{
-							{
-								X509Certificate: testTLSCert.Certificate[0],
-								IpAddr:          []byte(net.IPv6zero),
-								IpPort:          9631,
-								Timestamp:       uint64(nowUnix),
-								Signature:       compressibleContainers[0],
-							},
+				PeerList: &p2p.PeerList{
+					ClaimedIpPorts: []*p2p.ClaimedIpPort{
+						{
+							X509Certificate: testTLSCert.Certificate[0],
+							IpAddr:          []byte(net.IPv6zero),
+							IpPort:          9631,
+							Timestamp:       uint64(nowUnix),
+							Signature:       compressibleContainers[0],
 						},
 					},
 				},
@@ -192,12 +175,10 @@ func TestMessage(t *testing.T) {
 			desc: "get_state_summary_frontier message with no compression",
 			op:   GetStateSummaryFrontierOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_GetStateSummaryFrontier{
-					GetStateSummaryFrontier: &p2p.GetStateSummaryFrontier{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Deadline:  1,
-					},
+				GetStateSummaryFrontier: &p2p.GetStateSummaryFrontier{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Deadline:  1,
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -208,12 +189,10 @@ func TestMessage(t *testing.T) {
 			desc: "state_summary_frontier message with no compression",
 			op:   StateSummaryFrontierOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_StateSummaryFrontier_{
-					StateSummaryFrontier_: &p2p.StateSummaryFrontier{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Summary:   []byte{0},
-					},
+				StateSummaryFrontier: &p2p.StateSummaryFrontier{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Summary:   []byte{0},
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -224,12 +203,10 @@ func TestMessage(t *testing.T) {
 			desc: "state_summary_frontier message with zstd compression",
 			op:   StateSummaryFrontierOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_StateSummaryFrontier_{
-					StateSummaryFrontier_: &p2p.StateSummaryFrontier{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Summary:   compressibleContainers[0],
-					},
+				StateSummaryFrontier: &p2p.StateSummaryFrontier{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Summary:   compressibleContainers[0],
 				},
 			},
 			compressionType:  compression.TypeZstd,
@@ -240,13 +217,11 @@ func TestMessage(t *testing.T) {
 			desc: "get_accepted_state_summary message with no compression",
 			op:   GetAcceptedStateSummaryOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_GetAcceptedStateSummary{
-					GetAcceptedStateSummary: &p2p.GetAcceptedStateSummary{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Deadline:  1,
-						Heights:   []uint64{0},
-					},
+				GetAcceptedStateSummary: &p2p.GetAcceptedStateSummary{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Deadline:  1,
+					Heights:   []uint64{0},
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -257,13 +232,11 @@ func TestMessage(t *testing.T) {
 			desc: "get_accepted_state_summary message with zstd compression",
 			op:   GetAcceptedStateSummaryOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_GetAcceptedStateSummary{
-					GetAcceptedStateSummary: &p2p.GetAcceptedStateSummary{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Deadline:  1,
-						Heights:   []uint64{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-					},
+				GetAcceptedStateSummary: &p2p.GetAcceptedStateSummary{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Deadline:  1,
+					Heights:   []uint64{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 				},
 			},
 			compressionType:  compression.TypeZstd,
@@ -274,12 +247,10 @@ func TestMessage(t *testing.T) {
 			desc: "accepted_state_summary message with no compression",
 			op:   AcceptedStateSummaryOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_AcceptedStateSummary_{
-					AcceptedStateSummary_: &p2p.AcceptedStateSummary{
-						ChainId:    testID[:],
-						RequestId:  1,
-						SummaryIds: [][]byte{testID[:], testID[:]},
-					},
+				AcceptedStateSummary: &p2p.AcceptedStateSummary{
+					ChainId:    testID[:],
+					RequestId:  1,
+					SummaryIds: [][]byte{testID[:], testID[:]},
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -290,12 +261,10 @@ func TestMessage(t *testing.T) {
 			desc: "accepted_state_summary message with zstd compression",
 			op:   AcceptedStateSummaryOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_AcceptedStateSummary_{
-					AcceptedStateSummary_: &p2p.AcceptedStateSummary{
-						ChainId:    testID[:],
-						RequestId:  1,
-						SummaryIds: [][]byte{testID[:], testID[:], testID[:], testID[:], testID[:], testID[:], testID[:], testID[:], testID[:]},
-					},
+				AcceptedStateSummary: &p2p.AcceptedStateSummary{
+					ChainId:    testID[:],
+					RequestId:  1,
+					SummaryIds: [][]byte{testID[:], testID[:], testID[:], testID[:], testID[:], testID[:], testID[:], testID[:], testID[:]},
 				},
 			},
 			compressionType:  compression.TypeZstd,
@@ -306,12 +275,10 @@ func TestMessage(t *testing.T) {
 			desc: "get_accepted_frontier message with no compression",
 			op:   GetAcceptedFrontierOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_GetAcceptedFrontier{
-					GetAcceptedFrontier: &p2p.GetAcceptedFrontier{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Deadline:  1,
-					},
+				GetAcceptedFrontier: &p2p.GetAcceptedFrontier{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Deadline:  1,
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -322,12 +289,10 @@ func TestMessage(t *testing.T) {
 			desc: "accepted_frontier message with no compression",
 			op:   AcceptedFrontierOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_AcceptedFrontier_{
-					AcceptedFrontier_: &p2p.AcceptedFrontier{
-						ChainId:     testID[:],
-						RequestId:   1,
-						ContainerId: testID[:],
-					},
+				AcceptedFrontier: &p2p.AcceptedFrontier{
+					ChainId:     testID[:],
+					RequestId:   1,
+					ContainerId: testID[:],
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -338,13 +303,11 @@ func TestMessage(t *testing.T) {
 			desc: "get_accepted message with no compression",
 			op:   GetAcceptedOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_GetAccepted{
-					GetAccepted: &p2p.GetAccepted{
-						ChainId:      testID[:],
-						RequestId:    1,
-						Deadline:     1,
-						ContainerIds: [][]byte{testID[:], testID[:]},
-					},
+				GetAccepted: &p2p.GetAccepted{
+					ChainId:      testID[:],
+					RequestId:    1,
+					Deadline:     1,
+					ContainerIds: [][]byte{testID[:], testID[:]},
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -355,12 +318,10 @@ func TestMessage(t *testing.T) {
 			desc: "accepted message with no compression",
 			op:   AcceptedOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Accepted_{
-					Accepted_: &p2p.Accepted{
-						ChainId:      testID[:],
-						RequestId:    1,
-						ContainerIds: [][]byte{testID[:], testID[:]},
-					},
+				Accepted: &p2p.Accepted{
+					ChainId:      testID[:],
+					RequestId:    1,
+					ContainerIds: [][]byte{testID[:], testID[:]},
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -371,14 +332,12 @@ func TestMessage(t *testing.T) {
 			desc: "get_ancestors message with no compression",
 			op:   GetAncestorsOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_GetAncestors{
-					GetAncestors: &p2p.GetAncestors{
-						ChainId:     testID[:],
-						RequestId:   1,
-						Deadline:    1,
-						ContainerId: testID[:],
-						EngineType:  p2p.EngineType_ENGINE_TYPE_DAG,
-					},
+				GetAncestors: &p2p.GetAncestors{
+					ChainId:     testID[:],
+					RequestId:   1,
+					Deadline:    1,
+					ContainerId: testID[:],
+					EngineType:  p2p.EngineType_ENGINE_TYPE_CONSENSUSMAN,
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -389,12 +348,10 @@ func TestMessage(t *testing.T) {
 			desc: "ancestors message with no compression",
 			op:   AncestorsOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Ancestors_{
-					Ancestors_: &p2p.Ancestors{
-						ChainId:    testID[:],
-						RequestId:  12345,
-						Containers: compressibleContainers,
-					},
+				Ancestors: &p2p.Ancestors{
+					ChainId:    testID[:],
+					RequestId:  12345,
+					Containers: compressibleContainers,
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -405,12 +362,10 @@ func TestMessage(t *testing.T) {
 			desc: "ancestors message with zstd compression",
 			op:   AncestorsOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Ancestors_{
-					Ancestors_: &p2p.Ancestors{
-						ChainId:    testID[:],
-						RequestId:  12345,
-						Containers: compressibleContainers,
-					},
+				Ancestors: &p2p.Ancestors{
+					ChainId:    testID[:],
+					RequestId:  12345,
+					Containers: compressibleContainers,
 				},
 			},
 			compressionType:  compression.TypeZstd,
@@ -421,13 +376,11 @@ func TestMessage(t *testing.T) {
 			desc: "get message with no compression",
 			op:   GetOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Get{
-					Get: &p2p.Get{
-						ChainId:     testID[:],
-						RequestId:   1,
-						Deadline:    1,
-						ContainerId: testID[:],
-					},
+				Get: &p2p.Get{
+					ChainId:     testID[:],
+					RequestId:   1,
+					Deadline:    1,
+					ContainerId: testID[:],
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -438,12 +391,10 @@ func TestMessage(t *testing.T) {
 			desc: "put message with no compression",
 			op:   PutOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Put{
-					Put: &p2p.Put{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Container: []byte{0},
-					},
+				Put: &p2p.Put{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Container: []byte{0},
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -454,12 +405,10 @@ func TestMessage(t *testing.T) {
 			desc: "put message with zstd compression",
 			op:   PutOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Put{
-					Put: &p2p.Put{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Container: compressibleContainers[0],
-					},
+				Put: &p2p.Put{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Container: compressibleContainers[0],
 				},
 			},
 			compressionType:  compression.TypeZstd,
@@ -470,13 +419,11 @@ func TestMessage(t *testing.T) {
 			desc: "push_query message with no compression",
 			op:   PushQueryOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_PushQuery{
-					PushQuery: &p2p.PushQuery{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Deadline:  1,
-						Container: []byte{0},
-					},
+				PushQuery: &p2p.PushQuery{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Deadline:  1,
+					Container: []byte{0},
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -487,13 +434,11 @@ func TestMessage(t *testing.T) {
 			desc: "push_query message with zstd compression",
 			op:   PushQueryOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_PushQuery{
-					PushQuery: &p2p.PushQuery{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Deadline:  1,
-						Container: compressibleContainers[0],
-					},
+				PushQuery: &p2p.PushQuery{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Deadline:  1,
+					Container: compressibleContainers[0],
 				},
 			},
 			compressionType:  compression.TypeZstd,
@@ -504,13 +449,11 @@ func TestMessage(t *testing.T) {
 			desc: "pull_query message with no compression",
 			op:   PullQueryOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_PullQuery{
-					PullQuery: &p2p.PullQuery{
-						ChainId:     testID[:],
-						RequestId:   1,
-						Deadline:    1,
-						ContainerId: testID[:],
-					},
+				PullQuery: &p2p.PullQuery{
+					ChainId:     testID[:],
+					RequestId:   1,
+					Deadline:    1,
+					ContainerId: testID[:],
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -521,12 +464,10 @@ func TestMessage(t *testing.T) {
 			desc: "qbit message with no compression",
 			op:   QbitOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Chits{
-					Chits: &p2p.Chits{
-						ChainId:     testID[:],
-						RequestId:   1,
-						PreferredId: testID[:],
-					},
+				Chits: &p2p.Chits{
+					ChainId:     testID[:],
+					RequestId:   1,
+					PreferredId: testID[:],
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -537,13 +478,11 @@ func TestMessage(t *testing.T) {
 			desc: "app_request message with no compression",
 			op:   AppRequestOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_AppRequest{
-					AppRequest: &p2p.AppRequest{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Deadline:  1,
-						AppBytes:  compressibleContainers[0],
-					},
+				AppRequest: &p2p.AppRequest{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Deadline:  1,
+					AppBytes:  compressibleContainers[0],
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -554,13 +493,11 @@ func TestMessage(t *testing.T) {
 			desc: "app_request message with zstd compression",
 			op:   AppRequestOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_AppRequest{
-					AppRequest: &p2p.AppRequest{
-						ChainId:   testID[:],
-						RequestId: 1,
-						Deadline:  1,
-						AppBytes:  compressibleContainers[0],
-					},
+				AppRequest: &p2p.AppRequest{
+					ChainId:   testID[:],
+					RequestId: 1,
+					Deadline:  1,
+					AppBytes:  compressibleContainers[0],
 				},
 			},
 			compressionType:  compression.TypeZstd,
@@ -571,12 +508,10 @@ func TestMessage(t *testing.T) {
 			desc: "app_response message with no compression",
 			op:   AppResponseOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_AppResponse{
-					AppResponse: &p2p.AppResponse{
-						ChainId:   testID[:],
-						RequestId: 1,
-						AppBytes:  compressibleContainers[0],
-					},
+				AppResponse: &p2p.AppResponse{
+					ChainId:   testID[:],
+					RequestId: 1,
+					AppBytes:  compressibleContainers[0],
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -587,12 +522,10 @@ func TestMessage(t *testing.T) {
 			desc: "app_response message with zstd compression",
 			op:   AppResponseOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_AppResponse{
-					AppResponse: &p2p.AppResponse{
-						ChainId:   testID[:],
-						RequestId: 1,
-						AppBytes:  compressibleContainers[0],
-					},
+				AppResponse: &p2p.AppResponse{
+					ChainId:   testID[:],
+					RequestId: 1,
+					AppBytes:  compressibleContainers[0],
 				},
 			},
 			compressionType:  compression.TypeZstd,
@@ -603,11 +536,9 @@ func TestMessage(t *testing.T) {
 			desc: "app_gossip message with no compression",
 			op:   AppGossipOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_AppGossip{
-					AppGossip: &p2p.AppGossip{
-						ChainId:  testID[:],
-						AppBytes: compressibleContainers[0],
-					},
+				AppGossip: &p2p.AppGossip{
+					ChainId:  testID[:],
+					AppBytes: compressibleContainers[0],
 				},
 			},
 			compressionType:  compression.TypeNone,
@@ -618,11 +549,9 @@ func TestMessage(t *testing.T) {
 			desc: "app_gossip message with zstd compression",
 			op:   AppGossipOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_AppGossip{
-					AppGossip: &p2p.AppGossip{
-						ChainId:  testID[:],
-						AppBytes: compressibleContainers[0],
-					},
+				AppGossip: &p2p.AppGossip{
+					ChainId:  testID[:],
+					AppBytes: compressibleContainers[0],
 				},
 			},
 			compressionType:  compression.TypeZstd,
@@ -633,15 +562,11 @@ func TestMessage(t *testing.T) {
 			desc: "simplex message with no compression",
 			op:   SimplexOp,
 			msg: &p2p.Message{
-				Message: &p2p.Message_Simplex{
-					Simplex: &p2p.Simplex{
-						ChainId: testID[:],
-						Message: &p2p.Simplex_ReplicationRequest{
-							ReplicationRequest: &p2p.ReplicationRequest{
-								Seqs:        []uint64{1, 2, 3},
-								LatestRound: 1,
-							},
-						},
+				Simplex: &p2p.Simplex{
+					ChainId: testID[:],
+					ReplicationRequest: &p2p.ReplicationRequest{
+						Seqs:        []uint64{1, 2, 3},
+						LatestRound: 1,
 					},
 				},
 			},
@@ -686,17 +611,15 @@ func TestInboundMessageToString(t *testing.T) {
 
 	// msg that will become the tested InboundMessage
 	msg := &p2p.Message{
-		Message: &p2p.Message_Pong{
-			Pong: &p2p.Pong{},
-		},
+		Pong: &p2p.Pong{},
 	}
-	msgBytes, err := proto.Marshal(msg)
+	msgBytes, err := p2p.Marshal(msg)
 	require.NoError(err)
 
 	inboundMsg, err := mb.parseInbound(msgBytes, ids.EmptyNodeID, func() {})
 	require.NoError(err)
 
-	require.Equal("NodeID-111111111111111111116DBWJs Op: pong Message: ", inboundMsg.String())
+	require.Equal("NodeID-111111111111111111116DBWJs Op: pong Message: Pong{}", inboundMsg.String())
 
 	internalMsg := InternalGetStateSummaryFrontierFailed(ids.EmptyNodeID, ids.Empty, 1)
 	require.Equal("NodeID-111111111111111111116DBWJs Op: get_state_summary_frontier_failed Message: ChainID: 11111111111111111111111111111111LpoYY RequestID: 1", internalMsg.String())
@@ -707,18 +630,11 @@ func TestEmptyInboundMessage(t *testing.T) {
 
 	require := require.New(t)
 
-	mb, err := newMsgBuilder(
-		metric.NewRegistry(),
-		5*time.Second,
-	)
-	require.NoError(err)
-
+	// A message must carry exactly one payload. An empty message has no
+	// wire tag to encode, so the ZAP codec rejects it at marshal time.
 	msg := &p2p.Message{}
-	msgBytes, err := proto.Marshal(msg)
-	require.NoError(err)
-
-	_, err = mb.parseInbound(msgBytes, ids.EmptyNodeID, func() {})
-	require.ErrorIs(err, errUnknownMessageType)
+	_, err := p2p.Marshal(msg)
+	require.ErrorIs(err, p2p.ErrInvalidMessage)
 }
 
 func TestNilInboundMessage(t *testing.T) {
@@ -732,12 +648,13 @@ func TestNilInboundMessage(t *testing.T) {
 	)
 	require.NoError(err)
 
+	// A Ping with an empty (but non-nil) body is the smallest valid ping:
+	// the ZAP codec keys on the presence of the Ping field, so it round-trips
+	// to a *p2p.Ping with a zero-valued body.
 	msg := &p2p.Message{
-		Message: &p2p.Message_Ping{
-			Ping: nil,
-		},
+		Ping: &p2p.Ping{},
 	}
-	msgBytes, err := proto.Marshal(msg)
+	msgBytes, err := p2p.Marshal(msg)
 	require.NoError(err)
 
 	parsedMsg, err := mb.parseInbound(msgBytes, ids.EmptyNodeID, func() {})

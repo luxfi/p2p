@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 
 	"github.com/luxfi/ids"
 	"github.com/luxfi/node/utils/compression"
@@ -44,20 +43,18 @@ func BenchmarkMarshalHandshake(b *testing.B) {
 
 	id := ids.GenerateTestID()
 	msg := p2p.Message{
-		Message: &p2p.Message_Handshake{
-			Handshake: &p2p.Handshake{
-				NetworkId:     uint32(1337),
-				MyTime:        uint64(time.Now().Unix()),
-				IpAddr:        []byte(net.IPv4(1, 2, 3, 4).To16()),
-				IpPort:        0,
-				IpSigningTime: uint64(time.Now().Unix()),
-				IpNodeIdSig:   []byte{'y', 'e', 'e', 't'},
-				TrackedNets:   [][]byte{id[:]},
-				IpBlsSig:      []byte{'y', 'e', 'e', 't', '2'},
-			},
+		Handshake: &p2p.Handshake{
+			NetworkId:     uint32(1337),
+			MyTime:        uint64(time.Now().Unix()),
+			IpAddr:        []byte(net.IPv4(1, 2, 3, 4).To16()),
+			IpPort:        0,
+			IpSigningTime: uint64(time.Now().Unix()),
+			IpNodeIdSig:   []byte{'y', 'e', 'e', 't'},
+			TrackedNets:   [][]byte{id[:]},
+			IpBlsSig:      []byte{'y', 'e', 'e', 't', '2'},
 		},
 	}
-	msgLen := proto.Size(&msg)
+	msgLen := p2p.Size(&msg)
 
 	useBuilder := os.Getenv("USE_BUILDER") != ""
 
@@ -71,7 +68,7 @@ func BenchmarkMarshalHandshake(b *testing.B) {
 		if useBuilder {
 			_, err = codec.createOutbound(&msg, compression.TypeNone, false)
 		} else {
-			_, err = proto.Marshal(&msg)
+			_, err = p2p.Marshal(&msg)
 		}
 		require.NoError(err)
 	}
@@ -100,21 +97,19 @@ func BenchmarkUnmarshalHandshake(b *testing.B) {
 
 	id := ids.GenerateTestID()
 	msg := p2p.Message{
-		Message: &p2p.Message_Handshake{
-			Handshake: &p2p.Handshake{
-				NetworkId:     uint32(1337),
-				MyTime:        uint64(time.Now().Unix()),
-				IpAddr:        []byte(net.IPv4(1, 2, 3, 4).To16()),
-				IpPort:        0,
-				IpSigningTime: uint64(time.Now().Unix()),
-				IpNodeIdSig:   []byte{'y', 'e', 'e', 't'},
-				TrackedNets:   [][]byte{id[:]},
-				IpBlsSig:      []byte{'y', 'e', 'e', 't', '2'},
-			},
+		Handshake: &p2p.Handshake{
+			NetworkId:     uint32(1337),
+			MyTime:        uint64(time.Now().Unix()),
+			IpAddr:        []byte(net.IPv4(1, 2, 3, 4).To16()),
+			IpPort:        0,
+			IpSigningTime: uint64(time.Now().Unix()),
+			IpNodeIdSig:   []byte{'y', 'e', 'e', 't'},
+			TrackedNets:   [][]byte{id[:]},
+			IpBlsSig:      []byte{'y', 'e', 'e', 't', '2'},
 		},
 	}
 
-	rawMsg, err := proto.Marshal(&msg)
+	rawMsg, err := p2p.Marshal(&msg)
 	require.NoError(err)
 
 	useBuilder := os.Getenv("USE_BUILDER") != ""
@@ -128,7 +123,7 @@ func BenchmarkUnmarshalHandshake(b *testing.B) {
 			require.NoError(err)
 		} else {
 			var msg p2p.Message
-			require.NoError(proto.Unmarshal(rawMsg, &msg))
+			require.NoError(p2p.Unmarshal(rawMsg, &msg))
 		}
 	}
 }
