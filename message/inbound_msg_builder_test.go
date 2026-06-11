@@ -399,13 +399,11 @@ func TestAppError(t *testing.T) {
 	errorMessage := "hello world"
 
 	want := &p2p.Message{
-		Message: &p2p.Message_AppError{
-			AppError: &p2p.AppError{
-				ChainId:      chainID[:],
-				RequestId:    requestID,
-				ErrorCode:    errorCode,
-				ErrorMessage: errorMessage,
-			},
+		AppError: &p2p.AppError{
+			ChainId:      chainID[:],
+			RequestId:    requestID,
+			ErrorCode:    errorCode,
+			ErrorMessage: errorMessage,
 		},
 	}
 

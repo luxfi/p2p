@@ -18,6 +18,21 @@ const (
 	EngineType_ENGINE_TYPE_CONSENSUSMAN EngineType = 2
 )
 
+// engineTypeNames maps EngineType values to their canonical names.
+var engineTypeNames = map[EngineType]string{
+	EngineType_ENGINE_TYPE_UNSPECIFIED:  "ENGINE_TYPE_UNSPECIFIED",
+	EngineType_ENGINE_TYPE_LUX:          "ENGINE_TYPE_LUX",
+	EngineType_ENGINE_TYPE_CONSENSUSMAN: "ENGINE_TYPE_CONSENSUSMAN",
+}
+
+// String returns the canonical name of the engine type.
+func (e EngineType) String() string {
+	if name, ok := engineTypeNames[e]; ok {
+		return name
+	}
+	return fmt.Sprintf("EngineType(%d)", int32(e))
+}
+
 // Message is the top-level p2p message container.
 // Only one field should be non-nil at a time.
 type Message struct {
