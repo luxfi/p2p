@@ -5,7 +5,7 @@ go 1.26.4
 require (
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/luxfi/consensus v1.25.0
-	github.com/luxfi/constants v1.5.8-0.20260603055356-93c2c2ceb9ca
+	github.com/luxfi/constants v1.5.8
 	github.com/luxfi/crypto v1.19.17
 	github.com/luxfi/ids v1.2.10
 	github.com/luxfi/log v1.4.1
@@ -13,7 +13,7 @@ require (
 	github.com/luxfi/metric v1.5.7
 	github.com/luxfi/mock v0.1.1
 	github.com/luxfi/node v1.22.81
-	github.com/luxfi/upgrade v1.0.1-0.20260603055252-f51810805436
+	github.com/luxfi/upgrade v1.0.1
 	github.com/luxfi/utils v1.1.5
 	github.com/luxfi/version v1.0.1
 	github.com/luxfi/warp v1.18.6
