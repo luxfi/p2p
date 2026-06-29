@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/hero.svg" alt="p2p" width="880"></p>
+
 # p2p
 
 The `p2p` package provides a low-level networking abstraction for peer-to-peer communication in the Lux ecosystem.
