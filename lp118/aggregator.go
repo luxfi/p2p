@@ -34,11 +34,11 @@ func NewSignatureAggregator(logger log.Logger, client Client) *SignatureAggregat
 // AggregateSignatures collects signatures for the given unsigned message from validators.
 func (a *SignatureAggregator) AggregateSignatures(
 	ctx context.Context,
-	msg *warp.UnsignedMessage,
+	msg *warp.Message,
 	justification []byte,
 	quorumNum uint64,
 	quorumDen uint64,
-) (*warp.Message, error) {
+) (*warp.Envelope, error) {
 	// Serialize the message for requests
 	msgBytes := msg.Bytes()
 
@@ -49,8 +49,8 @@ func (a *SignatureAggregator) AggregateSignatures(
 	// 3. Aggregate signatures until quorum is reached
 	// 4. Create the signed warp message
 
-	// Create a placeholder signed message
-	signedMsg, err := warp.NewMessage(msg, &warp.BitSetSignature{})
+	// Placeholder: Beam-only, no Corona or ML-DSA cert-set lane.
+	signedMsg, err := warp.NewEnvelope(msg, warp.BitSetSignature{}, nil, nil)
 	if err != nil {
 		if a.log != nil {
 			a.log.Warn("failed to create signed message",
@@ -68,7 +68,7 @@ func (a *SignatureAggregator) AggregateSignatures(
 func (a *SignatureAggregator) RequestSignature(
 	ctx context.Context,
 	nodeID ids.NodeID,
-	msg *warp.UnsignedMessage,
+	msg *warp.Message,
 ) ([]byte, error) {
 	if a.client == nil {
 		return nil, nil

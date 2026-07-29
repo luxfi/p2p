@@ -23,13 +23,13 @@ const HandlerID = p2p.SignatureRequestHandlerID
 type Verifier interface {
 	// Verify verifies the unsigned message with the given justification.
 	// Returns nil if verification succeeds, or an AppError if it fails.
-	Verify(ctx context.Context, msg *warp.UnsignedMessage, justification []byte) *core.AppError
+	Verify(ctx context.Context, msg *warp.Message, justification []byte) *core.AppError
 }
 
 // Signer signs warp messages.
 type Signer interface {
 	// Sign signs the unsigned message and returns the signature bytes.
-	Sign(msg *warp.UnsignedMessage) ([]byte, error)
+	Sign(msg *warp.Message) ([]byte, error)
 }
 
 // Handler handles LP118 warp message requests.
@@ -72,7 +72,7 @@ func (h *CachedHandler) Request(ctx context.Context, nodeID ids.NodeID, deadline
 	}
 
 	// Parse the request to get the unsigned message
-	msg, err := warp.ParseUnsignedMessage(requestBytes)
+	msg, err := warp.ParseMessage(requestBytes)
 	if err != nil {
 		return nil, &p2p.Error{
 			Code:    1,
