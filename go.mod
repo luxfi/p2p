@@ -4,7 +4,7 @@ go 1.26.4
 
 require (
 	github.com/golang/mock v1.7.0-rc.1
-	github.com/luxfi/consensus v1.36.2
+	github.com/luxfi/consensus v1.36.81
 	github.com/luxfi/constants v1.6.2
 	github.com/luxfi/crypto v1.20.2
 	github.com/luxfi/ids v1.3.2
@@ -39,9 +39,9 @@ require (
 	github.com/luxfi/accel v1.2.4 // indirect
 	github.com/luxfi/atomic v1.0.0 // indirect
 	github.com/luxfi/cache v1.3.1 // indirect
-	github.com/luxfi/container v0.2.1 // indirect
+	github.com/luxfi/container v0.2.2 // indirect
 	github.com/luxfi/filesystem v0.0.1 // indirect
-	github.com/luxfi/geth v1.20.1 // indirect
+	github.com/luxfi/geth v1.20.2 // indirect
 	github.com/luxfi/math/big v0.1.0 // indirect
 	github.com/luxfi/mdns v0.1.1 // indirect
 	github.com/luxfi/pq v1.1.0 // indirect
