@@ -32,7 +32,7 @@ import (
 	"github.com/luxfi/p2p/tracker"
 	luxtls "github.com/luxfi/tls"
 	"github.com/luxfi/upgrade"
-	"github.com/luxfi/utils"
+	"github.com/luxfi/util"
 	"github.com/luxfi/version"
 )
 

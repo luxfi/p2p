@@ -16,7 +16,7 @@ import (
 
 	"github.com/luxfi/crypto/bls/signer/localsigner"
 	luxtls "github.com/luxfi/tls"
-	"github.com/luxfi/utils"
+	"github.com/luxfi/util"
 )
 
 func TestIPSigner(t *testing.T) {

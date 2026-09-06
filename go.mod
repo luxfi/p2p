@@ -14,7 +14,7 @@ require (
 	github.com/luxfi/mock v0.1.1
 	github.com/luxfi/node v1.36.15
 	github.com/luxfi/upgrade v1.0.3
-	github.com/luxfi/utils v1.3.1
+	github.com/luxfi/util v1.3.4
 	github.com/luxfi/version v1.0.1
 	github.com/luxfi/warp v1.24.1
 	github.com/stretchr/testify v1.11.1

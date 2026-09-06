@@ -30,7 +30,7 @@ import (
 	"github.com/luxfi/p2p/message"
 	"github.com/luxfi/p2p/proto/pb/p2p"
 	luxtls "github.com/luxfi/tls"
-	"github.com/luxfi/utils"
+	"github.com/luxfi/util"
 	"github.com/luxfi/version"
 )
 
