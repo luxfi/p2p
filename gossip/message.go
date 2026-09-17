@@ -75,7 +75,7 @@ func ParseAppResponse(bytes []byte) ([][]byte, error) {
 	count := binary.BigEndian.Uint32(bytes[0:4])
 	gossip := make([][]byte, 0, count)
 	offset := 4
-	for i := uint32(0); i < count; i++ {
+	for i := range count {
 		if len(bytes) < offset+4 {
 			return nil, fmt.Errorf("data too short for item %d length: %d", i, len(bytes))
 		}

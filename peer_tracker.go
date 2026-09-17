@@ -66,14 +66,14 @@ func (h *bandwidthHeap) Swap(i, j int) {
 	h.items[j].index = j
 }
 
-func (h *bandwidthHeap) Push(x interface{}) {
+func (h *bandwidthHeap) Push(x any) {
 	item := x.(*heapItem)
 	item.index = len(h.items)
 	h.items = append(h.items, item)
 	h.nodeMap[item.nodeID] = item
 }
 
-func (h *bandwidthHeap) Pop() interface{} {
+func (h *bandwidthHeap) Pop() any {
 	old := h.items
 	n := len(old)
 	item := old[n-1]

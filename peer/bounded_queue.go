@@ -228,15 +228,12 @@ func (q *BoundedMessageQueue) DequeueBatch(n int) []message.OutboundMessage {
 	}
 
 	// Determine batch size
-	batchSize := n
-	if batchSize > q.size {
-		batchSize = q.size
-	}
+	batchSize := min(n, q.size)
 
 	batch := make([]message.OutboundMessage, batchSize)
 	totalSize := int64(0)
 
-	for i := 0; i < batchSize; i++ {
+	for i := range batchSize {
 		msg := q.messages[q.head]
 		batch[i] = msg
 		q.messages[q.head] = nil // Help GC

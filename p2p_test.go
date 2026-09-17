@@ -28,7 +28,7 @@ func TestThrottler(t *testing.T) {
 	nodeID := ids.GenerateTestNodeID()
 
 	// First 5 requests should pass
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		if !throttler.Handle(nodeID) {
 			t.Errorf("request %d should have passed", i)
 		}

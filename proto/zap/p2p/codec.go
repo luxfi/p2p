@@ -60,7 +60,7 @@ var (
 	ErrUnknownTag     = errors.New("unknown message tag")
 
 	bufPool = sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			b := make([]byte, 64*1024)
 			return &b
 		},
@@ -222,7 +222,7 @@ func (r *Reader) ReadBytesSlice() ([][]byte, error) {
 		return nil, err
 	}
 	result := make([][]byte, count)
-	for i := uint32(0); i < count; i++ {
+	for i := range count {
 		result[i], err = r.ReadBytes()
 		if err != nil {
 			return nil, err
@@ -237,7 +237,7 @@ func (r *Reader) ReadUint32Slice() ([]uint32, error) {
 		return nil, err
 	}
 	result := make([]uint32, count)
-	for i := uint32(0); i < count; i++ {
+	for i := range count {
 		result[i], err = r.ReadUint32()
 		if err != nil {
 			return nil, err
@@ -252,7 +252,7 @@ func (r *Reader) ReadUint64Slice() ([]uint64, error) {
 		return nil, err
 	}
 	result := make([]uint64, count)
-	for i := uint32(0); i < count; i++ {
+	for i := range count {
 		result[i], err = r.ReadUint64()
 		if err != nil {
 			return nil, err
@@ -898,7 +898,7 @@ func unmarshalPeerList(r *Reader) (*PeerList, error) {
 		return nil, err
 	}
 	m.ClaimedIpPorts = make([]*ClaimedIpPort, count)
-	for i := uint32(0); i < count; i++ {
+	for i := range count {
 		p := &ClaimedIpPort{}
 		p.X509Certificate, err = r.ReadBytes()
 		if err != nil {
@@ -1467,7 +1467,7 @@ func unmarshalReplicationResponse(r *Reader) (*ReplicationResponse, error) {
 		return nil, err
 	}
 	m.Data = make([]*QuorumRound, count)
-	for i := uint32(0); i < count; i++ {
+	for i := range count {
 		m.Data[i], err = unmarshalQuorumRound(r)
 		if err != nil {
 			return nil, err

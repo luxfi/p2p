@@ -69,7 +69,7 @@ func TestBloomFilterMarshal(t *testing.T) {
 	require.NoError(err)
 
 	// Add some items
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		bf.Add(&testGossipable{id: ids.GenerateTestID()})
 	}
 
@@ -112,7 +112,7 @@ func TestResetBloomFilterIfNeeded(t *testing.T) {
 	initialSalt := bf.Salt()
 
 	// Add enough items to trigger reset threshold
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		bf.Add(&testGossipable{id: ids.GenerateTestID()})
 	}
 
@@ -139,7 +139,7 @@ func TestBloomFilterNoResetNotNeeded(t *testing.T) {
 	require.NoError(err)
 
 	// Add just a few items (well under capacity)
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		bf.Add(&testGossipable{id: ids.GenerateTestID()})
 	}
 

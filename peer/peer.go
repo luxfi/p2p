@@ -1010,13 +1010,11 @@ func (p *peer) handleHandshake(msg *p2p.Handshake) {
 	}
 
 	p.ip = &SignedIP{
-		UnsignedIP: UnsignedIP{
-			AddrPort: netip.AddrPortFrom(
-				addr,
-				port,
-			),
-			Timestamp: msg.IpSigningTime,
-		},
+		AddrPort: netip.AddrPortFrom(
+			addr,
+			port,
+		),
+		Timestamp:    msg.IpSigningTime,
 		TLSSignature: msg.IpNodeIdSig,
 	}
 	maxTimestamp := localTime.Add(p.MaxClockDifference)

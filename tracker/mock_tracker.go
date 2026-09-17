@@ -43,7 +43,7 @@ func (m *MockTracker) Usage(nodeID ids.NodeID, now time.Time) float64 {
 }
 
 // Usage indicates an expected call of Usage
-func (mr *MockTrackerMockRecorder) Usage(nodeID, now interface{}) *gomock.Call {
+func (mr *MockTrackerMockRecorder) Usage(nodeID, now any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Usage", reflect.TypeOf((*MockTracker)(nil).Usage), nodeID, now)
 }
@@ -57,7 +57,7 @@ func (m *MockTracker) TimeUntilUsage(nodeID ids.NodeID, now time.Time, value flo
 }
 
 // TimeUntilUsage indicates an expected call of TimeUntilUsage
-func (mr *MockTrackerMockRecorder) TimeUntilUsage(nodeID, now, value interface{}) *gomock.Call {
+func (mr *MockTrackerMockRecorder) TimeUntilUsage(nodeID, now, value any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TimeUntilUsage", reflect.TypeOf((*MockTracker)(nil).TimeUntilUsage), nodeID, now, value)
 }

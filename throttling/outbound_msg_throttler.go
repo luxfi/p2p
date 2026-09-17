@@ -49,16 +49,14 @@ func NewSybilOutboundMsgThrottler(
 	config MsgByteThrottlerConfig,
 ) (OutboundMsgThrottler, error) {
 	t := &outboundMsgThrottler{
-		commonMsgThrottler: commonMsgThrottler{
-			log:                    log,
-			vdrs:                   vdrs,
-			maxVdrBytes:            config.VdrAllocSize,
-			remainingVdrBytes:      config.VdrAllocSize,
-			remainingAtLargeBytes:  config.AtLargeAllocSize,
-			nodeMaxAtLargeBytes:    config.NodeMaxAtLargeBytes,
-			nodeToVdrBytesUsed:     make(map[ids.NodeID]uint64),
-			nodeToAtLargeBytesUsed: make(map[ids.NodeID]uint64),
-		},
+		log:                    log,
+		vdrs:                   vdrs,
+		maxVdrBytes:            config.VdrAllocSize,
+		remainingVdrBytes:      config.VdrAllocSize,
+		remainingAtLargeBytes:  config.AtLargeAllocSize,
+		nodeMaxAtLargeBytes:    config.NodeMaxAtLargeBytes,
+		nodeToVdrBytesUsed:     make(map[ids.NodeID]uint64),
+		nodeToAtLargeBytesUsed: make(map[ids.NodeID]uint64),
 	}
 	return t, t.metrics.initialize(registerer)
 }

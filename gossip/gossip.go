@@ -150,7 +150,7 @@ func isNilInterface(i any) bool {
 		return true
 	}
 	v := reflect.ValueOf(i)
-	return v.Kind() == reflect.Ptr && v.IsNil()
+	return v.Kind() == reflect.Pointer && v.IsNil()
 }
 
 func NewPullGossiper[T Gossipable](

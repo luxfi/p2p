@@ -19,7 +19,7 @@ func TestDialThrottler(t *testing.T) {
 	// Allows 5 per second
 	throttler := NewDialThrottler(5)
 	// Use all 5
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		acquiredChan := make(chan error)
 		// Should return immediately because < 5 taken this second
 		go func() {
@@ -63,7 +63,7 @@ func TestDialThrottlerCancel(t *testing.T) {
 	// Allows 5 per second
 	throttler := NewDialThrottler(5)
 	// Use all 5
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		acquiredChan := make(chan error)
 		// Should return immediately because < 5 taken this second
 		go func() {
@@ -100,7 +100,7 @@ func TestNoDialThrottler(t *testing.T) {
 	require := require.New(t)
 
 	throttler := NewNoDialThrottler()
-	for i := 0; i < 250; i++ {
+	for range 250 {
 		startTime := time.Now()
 		require.NoError(throttler.Acquire(context.Background())) // Should always immediately return
 		require.WithinDuration(time.Now(), startTime, 25*time.Millisecond)
